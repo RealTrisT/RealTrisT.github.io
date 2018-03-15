@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog - TrisT</title>
+<style>
+/*------------------------ body --------------------*/
+  body{
+    margin: 0px;
+    background-color: #36393e;
+  }
+
+
+/*----------------------- navbar -------------------*/
+  .navbarul {
+      font-family: "Courier New", Courier, monospace;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #2f3136;
+  }
+
+  .navbarli {
+      float: left;
+  }
+
+  .navbarli a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+  }
+
+  .navbarli a:hover:not(.navbaractive) {
+      background-color: #111;
+  }
+
+  .navbaractive {
+      background-color: #a742f4;
+  }
+
+
+/*---------------------- content -------------------*/
+  #main_text{
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 20px;
+    color: #e0e0e0;
+  }
+
+  #lePost{
+    font-family: "Courier New", Courier, monospace;
+    color: #ccbfb5;
+  }
+
+</style>
+</head>
+<body>
+
+<ul class="navbarul">
+  <li class="navbarli"><a href="../../../">Home</a></li>
+  <li class="navbarli"><a class="navbaractive" href="../../">Blog</a></li>
+  <li class="navbarli"><a href="../../../Projects">Projects</a></li> 
+  <li class="navbarli"><a href="../../../About">About</a></li>
+  <li class="navbarli" style="float:right;"><div style="display: block; text-align: center; color: white; padding: 14px 16px;">Monospace Font Master Race</div></li>
+</ul>
+
+<div class="lecontent" id="main_text">
+  <br>
+  <center>
+    <h1><span style='font-family: "Courier New", Courier, monospace'>Aight</span></h1>
+    <h3><i><font color="#ffaa00">Proof of concept</font>: Automatic Show Torrenter</i></h3>
+  </center>
+  <hr><br>
+  <div id="lePost">
+    <h3>Disclaimer:</h3>
+    This is a proof of concept post, nothing more, doesn't mean I download stuff illegally, doesn't mean anyone should, bla bla bla.<br>
+    The images provided are nothing but examples of what can be achieved.<br><br><br>
+    <h3>TL;DR</h3>
+    There's a video if you scroll down with a working early version of this project (manual input) that shows it working, so if you don't like reading, get to scrolling.<br><br><br>
+    <h3>The Thing.</h3>
+    So this is just a test post basically, so I can model the server and check if it's worth coding something to format my posts automatically so I don't have to write the HTML itself.<br>
+    <br>
+    So yeah, I made this lil thing python script to go on piratebay and get torrent magnet links, then execute bittorrent with them as a startup param.<br>
+    Set up a config file as well, for however many shows the user may want to check.<br>
+    <br>
+    That's the basics.<br>
+    <br>
+    <br>
+    There really isn't that much to it, It just grabs a file with this format:<br><br>
+    <img src="https://imgur.com/nHHX4ii.png"><br><br>
+    And scouts piratebay for results on the search_term attribute of each show.<br><br>
+    After that it finds a valid candidate (valid candidates must have "720" or "1080" in the title of the torrent), it checks for the "except" attribute (if the current tag has it).<br>
+    Pretty self explanatory, lets you rule out unwanted torrents that might show up in the search. A good example is the show "easy", there are seemingly a lot of torrents out there with "easy" in their name, as well as "720"/"1080", so I have a few excepts, separated by commas to rule those out.<br><br>
+    Then, as it is finding episodes, it will check if the uploader is any of the listed (the <uploader> tag), this is particularly useful because of fakes and stupid kids.<br><br>
+    If you don't have a lot of experience with torrents, I'll explain: idiots really like to make botnets any way possible, so they often upload "episodes" or "movies" too early, so idiots go there thinking they're hot shit, and get their pc assfucked.<br><br>
+    Other scenarios are people uploading trailers. Yes. This happens. They grab the "next season trailer" directly from youtube and upload it onto piratebay. God knows why! You'd think that anyone without youtube access would also not have piratebay access but oh well.<br><br>
+    Anyway that's pretty much it, I think the rest is pretty self explanatory. Many countries(including my own) block piratebay access, hence the "<proxy>" tag, and the "<torclient>" tag is just for the client used, grabs whatever is in the "location" attribute and replaces "%location with it", same for "%path" with save_directory, and "%torrent" is the magnet link it'll aquire.<br><br>
+    <br><br>
+    Here's an example of it working:<br><br>
+    <img src="https://imgur.com/3j45h7q.png">
+    <br><br>
+    Which yeilds the following result:<br><br>
+    <img src="https://imgur.com/IRB8pKi.png">
+    <br><br>
+    Then to manage it all, you could use something like plex, code your own service thing, the possibilities are endless really.<br>
+    <br><br>
+    <img src="https://imgur.com/SB4nnSa.png"><br>
+    yee.
+    <br><br><br><br>
+    <h3>The Vid.</h3>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/cdxfx8k-CqM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <br><br><br>
+    <h3>The End.</h3>
+    Hope I can have helped or at least entertained, l8r.
+    <br><br><br><br><br><br>
+  </div>
+  
+</div>
+
+</body>
+</html>
