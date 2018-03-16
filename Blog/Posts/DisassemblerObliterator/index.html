@@ -308,8 +308,8 @@ Same as with JNZ.<br />
 <br />
 <font size="6">Aftermath</font><br />
 <br />
-It would seem disassemblers and smart tools such as IDA rely heavily on jumps and calls to make their analysis, as well as always assume the worse when it comes to shady stuff.<br />
-For these reasons, spamming random hex into code doesn&#039;t seem to be of much help.<br />
+The main problem with this was that disassemblers, when given instructions that technically don't exist (which is the case with ``FF FF``), will automatically assume it's data and move on trying to find valid instructions.<br />
+For this reason, spamming random hex or invalid instructions into code doesn&#039;t seem to be of much help.<br />
 <br />
 With that said, a polymorphic engine might be in order.<br />
 <br />
