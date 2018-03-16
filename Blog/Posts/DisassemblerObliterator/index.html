@@ -308,7 +308,7 @@ Same as with JNZ.<br />
 <br />
 <font size="6">Aftermath</font><br />
 <br />
-The main problem with this was that disassemblers, when given instructions that technically don't exist (which is the case with ``FF FF``), they will automatically assume it's data and move on trying to find valid instructions.<br />
+The main problem with this was that disassemblers, when given instructions that technically don't exist (which is the case with ``FF FF``), will automatically assume it's data and move on trying to find valid instructions.<br />
 For this reason, spamming random hex or invalid instructions into code doesn&#039;t seem to be of much help.<br />
 <br />
 With that said, a polymorphic engine might be in order.<br />
