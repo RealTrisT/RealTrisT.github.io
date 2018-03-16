@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog - TrisT</title>
+<style>
+/*------------------------ body --------------------*/
+  body{
+    margin: 0px;
+    background-color: #36393e;
+  }
+
+
+/*----------------------- navbar -------------------*/
+  .navbarul {
+      font-family: "Courier New", Courier, monospace;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #2f3136;
+  }
+
+  .navbarli {
+      float: left;
+  }
+
+  .navbarli a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+  }
+
+  .navbarli a:hover:not(.navbaractive) {
+      background-color: #111;
+  }
+
+  .navbaractive {
+      background-color: #a742f4;
+  }
+
+
+/*---------------------- content -------------------*/
+  #main_text{
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 20px;
+    color: #e0e0e0;
+  }
+
+  #lePost{
+    font-family: "Courier New", Courier, monospace;
+    color: #ccbfb5;
+  }
+
+  #lePost a:link {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:visited {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:hover {
+      color: #9741d8;
+      text-decoration: none;
+  }
+
+  #lePost a:active {
+      color: red;
+  }
+
+
+  .code{
+    display: inline-flex;
+    background: #2f3136;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    text-indent: 0;
+    color: #839496;
+    padding: .5em;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    vertical-align: baseline;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    user-select: text;
+    -webkit-box-direction: normal;
+    text-rendering: optimizeLegibility;
+    border: 2px solid #111214;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 25px;
+  }
+
+  .smallcode{
+    background: #161719;    
+    color: #d1cdbe;
+    border: 1px solid #141413;
+    border-radius: 5px;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    padding: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 1px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<ul class="navbarul">
+  <li class="navbarli"><a href="../../../">Home</a></li>
+  <li class="navbarli"><a class="navbaractive" href="../../">Blog</a></li>
+  <li class="navbarli"><a href="../../../Projects">Projects</a></li> 
+  <li class="navbarli"><a href="../../../About">About</a></li>
+  <li class="navbarli" style="float:right;"><div style="display: block; text-align: center; color: white; padding: 14px 16px;">Monospace Font Master Race</div></li>
+</ul>
+
+<div class="lecontent" id="main_text">
+  <br>
+  <center>
+    <h1><span style='font-family: "Courier New", Courier, monospace'>Aight</span></h1>
+    <h3><i><font color="#ffaa00">Venture: </font>: Format Parser For Threads</i></h3>
+  </center>
+  <hr><br>
+  <div id="lePost">
+<!--
+    [h20][<~Why~>]
+    Now that I've started to write a blog and have no underlying platform, I figure I need a parser for stuff like formatting. Shitting <br>s all over the place is just really not what I wanna be doing for any longer than I have to, so I'm writing a tiny parser.
+
+
+    [h20][<~What~>]
+    So first off I'm pretty sure that what I've gotta do is escape unwanted characters.
+    I'm pretty sure there was a js function for that.
+
+    Nope, there's a jquery one, but that's just too much for what I'm tryina do.
+    I don't have anything against jquery, but for what I need it's overkill.
+
+    I [__LINK="https://stackoverflow.com/a/6234804/5352316"][<~found~>] another function tho:
+    ```js
+      function escapeHtml(text) {
+        return text
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+     }
+    ```
+    So yeah, let's escape ourselves some of that html:
+
+    [img src="https://imgur.com/xF6KczE.png"]
+    Works like a charm:
+    [img src="https://imgur.com/9LMDmGK.png"]
+
+    Now gotta do the newlines, decided to use replace as well. It doesn't need to be pretty, it needs to work.
+
+    Also, changed the container to a hidden textarea so chrome wouldn't automatically place the closing tags for things that aren't actually tags.
+
+    [img src="https://imgur.com/3gCWTjF.png"]
+    which now works:
+    [img src="https://imgur.com/c86vyh0.png"]
+
+    Now onto the elements that matter. Let's do links first.
+    I'm imagining links having this format:
+
+    [img src="https://imgur.com/LV3Oq1j.png"]
+
+    But that easily becomes a problem when you have to account for the fact that there might be a "]" somewhere in the text of the link, because I'd like this as restriction-free as possible.
+
+    So, even though it's really ugly, I've decided that, for every tag, I will use the following combination of characters: "[<~" for start and "~>]" for end.
+
+    So I figure the best thing to do is use a regex. I have no experience with regexes so Imma read on that.
+
+    Magic of writing, I just did. Took me half an hour, took you however much time to shift your eyes from the previous sentence.
+
+    So regexes are weird but fun, the one I've ended up making is:
+    ``/\[__LINK=(?:\"|&quot;)(.+?)(?:\"|&quot;)\]\[(?:&lt;|<)~(.+?)~(?:&gt;|>)\]/g``
+    Not gonna get to explaining it, it's fairly simple to learn, so if you curious, go search.
+
+    .
+
+    I've now finished what I would consider to be a semi-decent version of this.
+    Don't get me wrong, it's pretty fucking shit compared to stuff that's supposed to be decent (such as the stackoverflow or discord ones), but it gets the job done for this blog.
+
+    Here's it:
+    [img src="https://imgur.com/tNOzYDL.png"]
+
+    And it working:
+    [img src="https://imgur.com/MJyqk0u.png"]
+
+
+    I will admit this wasn't a project I had to much fun doing, didn't loose too much time with it, it just comes in handy, maybe in the future I'll make it decent.
+
+    Also:
+      1: This post was already made using this, inspect the page to find the original html (Imma leave it as comment).
+      2: You can test it [__LINK="test.html"][<~here~>].
+
+
+    [h20][<~Aight bye.~>]
+
+-->
+
+
+
+    <font size="20">Why</font><br />
+    Now that I&#039;ve started to write a blog and have no underlying platform, I figure I need a parser for stuff like formatting. Shitting &lt;br&gt;s all over the place is just really not what I wanna be doing for any longer than I have to, so I&#039;m writing a tiny parser.<br />
+    <br />
+    <br />
+    <font size="20">What</font><br />
+    So first off I&#039;m pretty sure that the first thing I&#039;ve gotta do is escape unwanted characters.<br />
+    I&#039;m pretty sure there was a js function for that.<br />
+    <br />
+    Nope, there&#039;s a jquery one, but that&#039;s just too much for what I&#039;m tryina do.<br />
+    I don&#039;t have anything against jquery, but for what I need it&#039;s overkill.<br />
+    <br />
+    I <a href="https://stackoverflow.com/a/6234804/5352316">found</a> another function tho:<br />
+    <div class="codecontainer"><pre class="code _js"><code>
+function escapeHtml(text) {
+  return text
+    .replace(/&amp;/g, &quot;&amp;amp;&quot;)
+    .replace(/&lt;/g, &quot;&amp;lt;&quot;)
+    .replace(/&gt;/g, &quot;&amp;gt;&quot;)
+    .replace(/&quot;/g, &quot;&amp;quot;&quot;)
+    .replace(/&#039;/g, &quot;&amp;#039;&quot;);
+}
+    </code></pre></div><br />
+    So yeah, let&#039;s escape ourselves some of that html:<br />
+    <br />
+    <img src="https://imgur.com/xF6KczE.png"><br /><br />
+    Works like a charm:<br />
+    <img src="https://imgur.com/9LMDmGK.png"><br />
+    <br />
+    Now gotta do the newlines, decided to use replace as well. It doesn&#039;t need to be pretty, it needs to work.<br />
+    <br />
+    Also, changed the container to a hidden textarea so chrome wouldn&#039;t automatically place the closing tags for things that aren&#039;t actually tags (as you can see it did in the 2 previous pics).<br />
+    <br />
+    <img src="https://imgur.com/3gCWTjF.png"><br /><br />
+    which now works:<br />
+    <img src="https://imgur.com/c86vyh0.png"><br />
+    <br />
+    Now onto the elements that matter. Let&#039;s do links first.<br />
+    I&#039;m imagining links having this format:<br />
+    <br />
+    <img src="https://imgur.com/LV3Oq1j.png"><br />
+    <br />
+    But that easily becomes a problem when you have to account for the fact that there might be a &quot;]&quot; somewhere in the text of the link, because I&#039;d like this as restriction-free as possible.<br />
+    <br />
+    So, even though it&#039;s really ugly, I&#039;ve decided that, for every tag, I will use the following combination of characters: &quot;[&lt;~&quot; for start and &quot;~&gt;]&quot; for end.<br />
+    <br />
+    So I figure the best thing to do is use a regex. I have no experience with regexes so Imma read on that.<br />
+    <br />
+    Magic of writing, I just did. Took me half an hour, took you however much time to shift your eyes from the previous sentence.<br />
+    <br />
+    So regexes are weird but fun, the one I&#039;ve ended up making is:<br /><br />
+    <code class="smallcode">/\[__LINK=(?:\&quot;|&amp;quot;)(.+?)(?:\&quot;|&amp;quot;)\]\[(?:&amp;lt;|&lt;)~(.+?)~(?:&amp;gt;|&gt;)\]/g</code><br /><br />
+    Not gonna get to explaining it, it&#039;s fairly simple to learn, so if you curious, go search.<br />
+    <br />
+    .<br />
+    <br />
+    I&#039;ve now finished what I would consider to be a semi-decent version of this.<br />
+    Don&#039;t get me wrong, it&#039;s pretty fucking shit compared to stuff that&#039;s supposed to be decent (such as the stackoverflow or discord ones), but it gets the job done for this blog.<br />
+    <br />
+    This post was already made using this, inspect the page to find the original html (Imma leave it as comment).<br />
+    You can test it <a href="test.html">here</a>.<br />
+    <br />
+    Here&#039;s it:<br />
+    <img src="https://imgur.com/tNOzYDL.png"><br />
+    <br />
+    And it working:<br />
+    <img src="https://imgur.com/MJyqk0u.png"><br />
+    <br />
+    <br />
+    I will admit this wasn&#039;t a project I had too much fun doing, didn&#039;t loose too much time with it, it just comes in handy, maybe in the future I&#039;ll make it decent.<br /><br />
+    Hope I could help or entertain, have a nice day or something. I never know what to say to people. Can't you just like say "sup" and "l8r" to literally everyone?. It pisses me off, I never get morning/afternoon right (may not make much sense cuz it's different in portuguese).<br />
+    (in case you're wondering about that ?. , yes it was on purpose and it's what I use to make it as obvious as possible that it's a rectorical question (it's not like you can answer buy meh))
+    <br />
+    <br />
+    <font size="20">Good talk bye.</font>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+  </div>
+  
+</div>
+
+</body>
+</html>

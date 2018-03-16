@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>nigg</title>
+</head>
+<body>
+<!-- ////////////////////text///////////////////////-->
+	<textarea id="textiles" style="width: 100%; height: 200px;">
+		tag is <hewro> and it is not meant to b usd.
+		[__LINK="https://www.google.pt/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"][<~found~>]
+		``topcodez``
+		[img src="https://www.google.pt/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"]
+		[h1][<~ big gay ~>]
+		[h200][<~ leule [__COLOR="red"][<~ yostfu ~>] kiddo ~>]
+
+		```js
+			hey mang idk this is code;
+			must have one of those   ^ at the end tho
+			cool shit()?!"#$"#%"/)/$!"(@£€@§§€[€]}€+´~º-.,;:_ª^`*?»««»'')
+		```
+		``lilshit``
+
+		cool shit()?!"#$"#%"/)/$!"(@£€@§§€[€]}€+´~º-.,;:_ª^`*?»««»'')
+	</textarea>
+<hr>
+
+<!-- ////////////////////html///////////////////////-->
+	<div id="lePost"></div>
+<hr>
+	<div id="lehtml"></div>
+
+<!-- ///////////////////script//////////////////////-->
+	<script type="text/javascript">
+		var linkregex = /\[__LINK=(?:\"|&quot;)(.+?)(?:\"|&quot;)\]\[(?:&lt;|<)~(.+?)~(?:&gt;|>)\]/g;
+		var coderegex = /```([A-Za-z]*)(?:<\/br>|<br \/>|<br>|\n|\r\n|\r)(.+?)```/g;
+		var codsregex = /``(.+?)``/g;
+		var imagregex = /\[img src=(?:\"|&quot;)(.+?)(?:\"|&quot;)\]/g;
+		var textregex = /\[h(\d+)\]\[(?:&lt;|<)~(.+?)~(?:&gt;|>)\]/g;
+		var colrregex = /\[__COLOR=(?:\"|&quot;)(.+?)(?:\"|&quot;)\]\[(?:&lt;|<)~(.+?)~(?:&gt;|>)\]/g;
+
+		function escapeHtml(text) {return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");}
+
+		function doit(){
+			var lestr = document.getElementById("textiles").value;
+				lestr = escapeHtml(lestr);
+				lestr = lestr.replace(/\n/g, '<br />');
+				lestr = lestr.replace(linkregex, "<a href=\"$1\">$2</a>");
+				lestr = lestr.replace(coderegex, "<div class=\"codecontainer\"><pre class=\"code _$1\"><code>$2</code></pre></div>");
+				lestr = lestr.replace(codsregex, "<code class=\"smallcode\">$1</code>");
+				lestr = lestr.replace(imagregex, "<img src=\"$1\">");
+				lestr = lestr.replace(textregex, "<font size=\"$1\">$2</font>");
+				lestr = lestr.replace(colrregex, "<font color=\"$1\">$2</font>");
+				document.getElementById("lehtml").innerHTML = escapeHtml(lestr).replace(/&lt;br \/&gt;/g, '&lt;br \/&gt;<br />');
+				document.getElementById("lePost").innerHTML = lestr;
+		}
+
+     	(function() {
+     		doit();
+     		document.getElementById("textiles").addEventListener('input', doit, false);
+		})();
+
+	</script>
+</body>
+</html>
