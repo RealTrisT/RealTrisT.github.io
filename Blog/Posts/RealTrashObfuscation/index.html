@@ -228,7 +228,9 @@ L8r.
 
 <font size="6">Concept</font><br />
 <br />
-So the idea is pretty simple. Disassemblers work really well because they can parse whatever they&#039;re given, so the idea is to give it something it can&#039;t make sense of. <br />
+So the idea is pretty simple. <br />
+The point of this is to break the disassembler, not confuse the user.<br />
+Disassemblers work really well because they can parse whatever they&#039;re given, so the idea is to give it something it can&#039;t make sense of. <br />
 That will fuck up instruction size calculation, as well as whatever else, causing the disassembler to completely fail, and break for both valid and invalid instructions.<br />
 There are a lot of invalid opcodes out there, so this should be simple enough.<br />
 <br />
