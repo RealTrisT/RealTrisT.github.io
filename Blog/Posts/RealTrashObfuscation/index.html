@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog - TrisT</title>
+<style>
+/*------------------------ body --------------------*/
+  body{
+    margin: 0px;
+    background-color: #36393e;
+  }
+
+
+/*----------------------- navbar -------------------*/
+  .navbarul {
+      font-family: "Courier New", Courier, monospace;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #2f3136;
+  }
+
+  .navbarli {
+      float: left;
+  }
+
+  .navbarli a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+  }
+
+  .navbarli a:hover:not(.navbaractive) {
+      background-color: #111;
+  }
+
+  .navbaractive {
+      background-color: #a742f4;
+  }
+
+
+/*---------------------- content -------------------*/
+  #main_text{
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 20px;
+    color: #e0e0e0;
+  }
+
+  #lePost{
+    font-family: "Courier New", Courier, monospace;
+    color: #ccbfb5;
+  }
+
+  #lePost a:link {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:visited {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:hover {
+      color: #9741d8;
+      text-decoration: none;
+  }
+
+  #lePost a:active {
+      color: red;
+  }
+
+
+  .code{
+    display: inline-flex;
+    background: #2f3136;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    text-indent: 0;
+    color: #839496;
+    padding: .5em;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    vertical-align: baseline;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    user-select: text;
+    -webkit-box-direction: normal;
+    text-rendering: optimizeLegibility;
+    border: 2px solid #111214;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 25px;
+  }
+
+  .smallcode{
+    background: #161719;    
+    color: #d1cdbe;
+    border: 1px solid #141413;
+    border-radius: 5px;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    padding: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 1px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<ul class="navbarul">
+  <li class="navbarli"><a href="../../../">Home</a></li>
+  <li class="navbarli"><a class="navbaractive" href="../../">Blog</a></li>
+  <li class="navbarli"><a href="../../../Projects">Projects</a></li> 
+  <li class="navbarli"><a href="../../../About">About</a></li>
+  <li class="navbarli" style="float:right;"><div style="display: block; text-align: center; color: white; padding: 14px 16px;">Monospace Font Master Race</div></li>
+</ul>
+
+<div class="lecontent" id="main_text">
+  <br>
+  <center>
+    <h1><span style='font-family: "Courier New", Courier, monospace'>Aight</span></h1>
+    <h3><i><font color="#ffaa00">Idea</font>: Trash Codecaving Obfuscation</i></h3>
+  </center>
+  <hr><br>
+  <div id="lePost">
+<!--
+    [h6][<~Concept~>]
+
+So the idea is pretty simple. Disassemblers work really well because they can parse whatever they're given, so the idea is to give it something it can't make sense of. 
+That will fuck up instruction size calculation, as well as whatever else, causing the disassembler to completely fail, and break for both valid and invalid instructions.
+There are a lot of invalid opcodes out there, so this should be simple enough.
+
+
+
+[h6][<~Getting to it~>]
+
+So I've made a test program with a little bit of trash code in the middle:
+[img src="https://imgur.com/AE6QbvD.png"]
+
+The plan is to replace this code with random hexadecimal, as many times as needed to complitely obliterate IDA.
+Now IDA isn't particularly difficult to break I feel. If I'm not mistaken, a couple nops easily mess it up, but it's a good starting point.
+
+The disassembly looks like this:
+[img src="https://imgur.com/Em9v5NM.png"]
+(ye ik my theme is shit, I'll change it eventually)
+
+So as we can see, we have that first code condition (``!(*str & 0x7F)``) at .text:104A, it would come in handy to change that to an unconditional jump (I would have made an impossible condition in code, but msvc optimization for release is just insane).
+Besides that, all we would really have to do is shuffle sume bits around between that jump and the ``after_trash`` label, and we should be good to go.
+
+So, changing the jump isn't hard, we just notice that it's a 0x75 jump, which is a short (8 bit) jump.
+[img src="https://imgur.com/5FZnb7E.png"]
+(from [__LINK="http://faydoc.tripod.com/cpu/jnz.htm"][<~here~>])
+
+So if that's the case, we need the opcode for the relative 8bit jmp:
+[img src="https://imgur.com/uMeyh6T.png"]
+(from [__LINK="http://faydoc.tripod.com/cpu/jmp.htm"][<~here~>])
+
+So now we get the file offset:
+[img src="https://imgur.com/E6CnxRg.png"]
+
+And change that byte in your hex editor of choice:
+[img src="https://imgur.com/qAXdOmA.png"]
+turns to
+[img src="https://imgur.com/E0Amczk.png"]
+
+And if we reload it into IDA, we can now see that we have a jump:
+[img src="https://imgur.com/XU5FcXM.png"]
+
+So all that's left really, is just to fill everything between that jump and the label (40104C - 40106B) with trash (Imma start with ``FF``s).
+(better save the address of the function: ``0x401040``)
+
+[img src="https://imgur.com/Rkl3yO1.png"]
+turns to
+[img src="https://imgur.com/Z8lvlbX.png"]
+
+[h6][<~Fuck.~>]
+
+Well, it would seem that IDA's a bit smarter than that.
+
+[img src="https://imgur.com/CShbdaW.png"]
+
+Cheat engine is having a bit of a harder time, but still manages to get the main part of the function.
+
+[img src="https://imgur.com/Ycn0EVL.png"]
+
+
+
+[h5][<~Random.~>]
+
+Results with random values aren't much better. I figure because of the jump. The jump basically tells the disassembler where the valid code resumes.
+
+[h5][<~JNZ.~>]
+
+Jnz yields somewhat better results, with IDA not recognizing the block of code as a subroutine (even though there's a call to it).
+Can be useful, specially because it's still possible to make an impossible condition and might be a bit more confusing.
+
+[img src="https://imgur.com/FNZda31.png"]
+
+
+[h5][<~No Jumps.~>]
+Same as with JNZ.
+
+
+
+[h6][<~Aftermath~>]
+
+It would seem disassemblers and smart tools such as IDA rely heavily on jumps and calls to make their analysis, as well as always assume the worse when it comes to shady stuff.
+For these reasons, spamming random hex into code doesn't seem to be of much help.
+
+With that said, a polymorphic engine might be in order.
+
+Using what was learned here, and the idea of a polymorphic engine, a program where IDA wouldn't have anything in the functions window might be possible.
+
+This "code caving" strategy might be useful for more than that. The same way we can deprive the reverser from information, we could also do the oposite. Make a binary so cluttered with xrefs it would be impossible to do anything, with little performance hit.
+
+
+
+[h6][<~Fin~>]
+Sorry no great discoveries were made here today, but hope you had fun nonetheless, I know I did.
+L8r.
+-->
+
+
+
+<font size="6">Concept</font><br />
+<br />
+So the idea is pretty simple. Disassemblers work really well because they can parse whatever they&#039;re given, so the idea is to give it something it can&#039;t make sense of. <br />
+That will fuck up instruction size calculation, as well as whatever else, causing the disassembler to completely fail, and break for both valid and invalid instructions.<br />
+There are a lot of invalid opcodes out there, so this should be simple enough.<br />
+<br />
+<br />
+<br />
+<font size="6">Getting to it</font><br />
+<br />
+So I&#039;ve made a test program with a little bit of trash code in the middle:<br />
+<img src="https://imgur.com/AE6QbvD.png"><br />
+<br />
+The plan is to replace this code with random hexadecimal, as many times as needed to complitely obliterate IDA.<br />
+Now IDA isn&#039;t particularly difficult to break I feel. If I&#039;m not mistaken, a couple nops easily mess it up, but it&#039;s a good starting point.<br />
+<br />
+The disassembly looks like this:<br /><br />
+<img src="https://imgur.com/Em9v5NM.png"><br /><br />
+(ye ik my theme is shit, I&#039;ll change it eventually)<br /><br />
+<br />
+So as we can see, we have that first code condition (<code class="smallcode">!(*str &amp; 0x7F)</code>) at .text:104A, it would come in handy to change that to an unconditional jump (I would have made an impossible condition in code, but msvc optimization for release is just insane).<br />
+Besides that, all we would really have to do is shuffle sume bits around between that jump and the <code class="smallcode">after_trash</code> label, and we should be good to go.<br /><br />
+<br />
+So, changing the jump isn&#039;t hard, we just notice that it&#039;s a 0x75 jump, which is a short (8 bit) jump.<br /><br />
+<img src="https://imgur.com/5FZnb7E.png"><br />
+(from <a href="http://faydoc.tripod.com/cpu/jnz.htm">here</a>)<br />
+<br />
+So if that&#039;s the case, we need the opcode for the relative 8bit jmp:<br />
+<img src="https://imgur.com/uMeyh6T.png"><br />
+(from <a href="http://faydoc.tripod.com/cpu/jmp.htm">here</a>)<br />
+<br />
+So now we get the file offset:<br />
+<img src="https://imgur.com/E6CnxRg.png"><br />
+<br />
+And change that byte in your hex editor of choice:<br />
+<img src="https://imgur.com/qAXdOmA.png"><br />
+turns to<br />
+<img src="https://imgur.com/E0Amczk.png"><br />
+<br />
+And if we reload it into IDA, we can now see that we have a jump:<br />
+<img src="https://imgur.com/XU5FcXM.png"><br />
+<br />
+So all that&#039;s left really, is just to fill everything between that jump and the label (40104C - 40106B) with trash (Imma start with <code class="smallcode">FF</code>s).<br />
+(better save the address of the function: <code class="smallcode">0x401040</code>)<br />
+<br />
+<img src="https://imgur.com/Rkl3yO1.png"><br />
+turns to<br />
+<img src="https://imgur.com/Z8lvlbX.png"><br />
+<br />
+<font size="6">Fuck.</font><br />
+<br />
+Well, it would seem that IDA&#039;s a bit smarter than that.<br />
+<br />
+<img src="https://imgur.com/CShbdaW.png"><br />
+<br />
+Cheat engine is having a bit of a harder time, but still manages to get the main part of the function.<br />
+<br />
+<img src="https://imgur.com/Ycn0EVL.png"><br />
+<br />
+<br />
+<br />
+<font size="5">Random.</font><br />
+<br />
+Results with random values aren&#039;t much better. I figure because of the jump. The jump basically tells the disassembler where the valid code resumes.<br />
+<br />
+<font size="5">JNZ.</font><br />
+<br />
+Jnz yields somewhat better results, with IDA not recognizing the block of code as a subroutine (even though there&#039;s a call to it).<br />
+Can be useful, specially because it&#039;s still possible to make an impossible condition and might be a bit more confusing.<br />
+<br />
+<img src="https://imgur.com/FNZda31.png"><br />
+<br />
+<br />
+<font size="5">No Jumps.</font><br />
+Same as with JNZ.<br />
+<br />
+<br />
+<br />
+<font size="6">Aftermath</font><br />
+<br />
+It would seem disassemblers and smart tools such as IDA rely heavily on jumps and calls to make their analysis, as well as always assume the worse when it comes to shady stuff.<br />
+For these reasons, spamming random hex into code doesn&#039;t seem to be of much help.<br />
+<br />
+With that said, a polymorphic engine might be in order.<br />
+<br />
+Using what was learned here, and the idea of a polymorphic engine, a program where IDA wouldn&#039;t have anything in the functions window might be possible.<br />
+<br />
+This &quot;code caving&quot; strategy might be useful for more than that. The same way we can deprive the reverser from information, we could also do the oposite. Make a binary so cluttered with xrefs it would be impossible to do anything, with little performance hit.<br />
+<br />
+Plus, this can be a cheap and easy strategy to evade more basic detection systems that may rely on for example hashes to determine whether or not a certain binary is "blacklisted" or whatever. No fancy stuff, just change a predefined/hardcoded set of bytes in a binary, and it's invisibru.<br />
+<br />
+<br />
+<br />
+<font size="6">Fin</font><br />
+Sorry no great discoveries were made here today, but hope you had fun nonetheless, I know I did.<br />
+L8r.
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+  </div>
+  
+</div>
+
+</body>
+</html>
