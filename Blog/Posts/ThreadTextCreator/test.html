@@ -2,6 +2,75 @@
 <html>
 <head>
 	<title>nigg</title>
+	<style type="text/css">  
+#main_text{
+    background-color: #36393e;
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 20px;
+    color: #e0e0e0;
+    padding-left: 20px;
+  }
+
+  #lePost{
+    font-family: "Courier New", Courier, monospace;
+    color: #ccbfb5;
+  }
+
+  #lePost a:link {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:visited {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:hover {
+      color: #9741d8;
+      text-decoration: none;
+  }
+
+  #lePost a:active {
+      color: red;
+  }
+
+
+  .code{
+    display: inline-flex;
+    background: #2f3136;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    text-indent: 0;
+    color: #839496;
+    padding: .5em;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    vertical-align: baseline;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    user-select: text;
+    -webkit-box-direction: normal;
+    text-rendering: optimizeLegibility;
+    border: 2px solid #111214;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 25px;
+  }
+
+  .smallcode{
+    background: #161719;    
+    color: #d1cdbe;
+    border: 1px solid #141413;
+    border-radius: 5px;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    padding: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 1px;
+  }
+}
+
+</style>
 </head>
 <body>
 <!-- ////////////////////text///////////////////////-->
@@ -25,7 +94,9 @@
 <hr>
 
 <!-- ////////////////////html///////////////////////-->
-	<div id="lePost"></div>
+	<div class="lecontent" id="main_text">
+		<div id="lePost"></div>
+	</div>
 <hr>
 	<div id="lehtml"></div>
 
