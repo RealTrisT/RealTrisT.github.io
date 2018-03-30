@@ -13,7 +13,7 @@ This project was made for windows only, which uses the "portable executable file
 
 Said sections can (and regularly will) have different permissions.
 
-So, for stuff like extending functionality, it can come in quite handy to have an extra, because binary size is never greater than 4gb, it makes it even better because one can just do relative jumps, so hooking stuff can be really easy.
+So, for stuff like extending functionality, it can come in quite handy to have an extra. Because binary size is never greater than 4gb, it makes it even better because one can just do relative jumps, so hooking stuff can be really easy.
 
 The initial plan was to make a section extender, where you'd for example make .text bigger, but that would mean that you'd have to fix every single relative address in the code that pointed to after the end of the section you extend, and that would basically require coding a disassembler, which I'm not willing to do (at least at this time).
 
