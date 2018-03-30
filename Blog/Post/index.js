@@ -14,7 +14,7 @@ function escapeHtml(text) {return text.replace(/&/g, "&amp;").replace(/</g, "&lt
 function doit(lestr){
 	//-------------------------------------------ajax request
 	lestr = escapeHtml(lestr);
-	lestr = lestr.replace(/\r\n/g, '<br />');
+	lestr = lestr.replace(/(?:\r\n|\n)/g, '<br />');
 	lestr = lestr.replace(linkregex, "<a href=\"$1\">$2</a>");
 	lestr = lestr.replace(coderegex, "<div class=\"codecontainer\"><pre class=\"code _$1\"><code>$2</code></pre></div>");
 	lestr = lestr.replace(codsregex, "<code class=\"smallcode\">$1</code>");
