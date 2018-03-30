@@ -1,0 +1,36 @@
+[__TITLE__][<~Web: New Easier Post Loader~>]
+
+[h20][<~Why~>]
+
+For the sake of simplicity.
+For 1, if I ever wanna change, say the navbar, and I have 100 posts, as it was I'd have to go and change the html for each and every one of them.
+This way, I change 1 page, it changes for all posts.
+
+
+
+[h20][<~What~>]
+
+Basically I made it so the posts are stored with the formatting I use to write them.
+The post will be chosen through the url.
+The url will be then converted to Posts/[URL_POST]/index.txt, and an ajax request will be made.
+The Formatting will be parsed, and it'll be gucc1.
+
+One of the biggest advantages is that I can write along, and to preview, all I gotta do is refresh the page.
+
+
+[h20][<~Example~>]
+
+The file tree (the html ones are the old, and will be updated to this new format):
+[img src="https://imgur.com/q0nX7Sp.png"]
+
+Which would look something like:
+[img src="https://imgur.com/9poYzur.png"]
+
+Then the url would be ``realtrist.github.io/Blog/Post/?w=NewPostFormat``.
+
+And basically, ``/Post`` will load index.txt, parse it, and boom, bootifull blog post you're currently reading.
+
+
+
+
+
