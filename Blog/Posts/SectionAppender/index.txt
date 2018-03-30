@@ -8,7 +8,7 @@ For fun.
 
 [h20][<~What~>]
 
-So executables have sections. For those who don't know sections are "subdivisions" on the binary, that contain data/code.
+So executables have sections. For those who don't know, sections are "subdivisions" on the binary that contain data/code.
 This project was made for windows only, which uses the "portable executable file format" (PE), unlike for example linux that uses ELF (might be implementation defined? I don't know as much about linux as I'd like, but it's not a priority for now).
 
 Said sections can (and regularly will) have different permissions.
