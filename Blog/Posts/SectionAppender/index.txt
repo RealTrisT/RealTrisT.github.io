@@ -1,0 +1,147 @@
+
+[__TITLE__][<~Tool: Section Appender~>]
+
+[h20][<~Why~>]
+
+For fun.
+
+
+[h20][<~What~>]
+
+So executables have sections. For those who don't know sections are "subdivisions" on the binary, that contain data/code.
+This project was made for windows only, which uses the "portable executable file format" (PE), unlike for example linux that uses ELF (might be implementation defined? I don't know as much about linux as I'd like, but it's not a priority for now).
+
+Said sections can (and regularly will) have different permissions.
+
+So, for stuff like extending functionality, it can come in quite handy to have an extra, because binary size is never greater than 4gb, it makes it even better because one can just do relative jumps, so hooking stuff can be really easy.
+
+The initial plan was to make a section extender, where you'd for example make .text bigger, but that would mean that you'd have to fix every single relative address in the code that pointed to after the end of the section you extend, and that would basically require coding a disassembler, which I'm not willing to do (at least at this time).
+
+
+[h20][<~Methodology~>]
+
+So unfortunately I'm a fuckwit and didn't save my notes, but the basic concept is:
+    -Calculate address and file offset of the new section (that has to be aligned to the SectionAlignment field of the windows PE optional fields)
+    -Calculate size in file of the new section (given it's actual size), it has to be aligned to the FileAlignment field of ^
+    -Add set section based on that info.
+    -Add the section entry to the section table.
+    -Increment the NumberOfSections field from the PE header
+    -Fix SizeOfImage field from windows PE optional fields
+    -Fix SizeOfCode/SizeOfInitializedData fields (optional)
+
+
+[h20][<~Else & Code~>]
+
+Now I've done this, but I have made a bit of a mistake.
+The maximum size of a binary is 4gb. 
+First I don't actually check what size it'll be when the section gets added, it might be >4gb, honestly, even though having it would make the program much better, that's something obvious that maybe should be left for the user to do(?), might revisit later.
+But the mistake is that I'm doing this with a buffer. I use realloc to increase the size of the buffer to account for the section, but if someone only has say 8gb of ram, and the binary is like 3.something, and the size with the section is 4, and realloc needs to allocate another memory block instead of just extending the current, that's gonna be 7+gb allocated at once, which will most likely cause problems. And even if it doesn't it's still bad design, should prob write the section directly to file, and then do the PE stuff.
+
+Anyways, here's the c0d3nz:
+```c
+//the permissions from the sections of a test binary
+#define SECTION_CODE  IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_EXECUTE | IMAGE_SCN_CNT_CODE
+#define SECTION_DATA  IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE | IMAGE_SCN_CNT_INITIALIZED_DATA
+#define SECTION_RDATA IMAGE_SCN_MEM_READ | IMAGE_SCN_CNT_INITIALIZED_DATA
+
+
+size_t AddSection(PEElements* ThePE, char** mfile_p, char sectionName[8], size_t newSectionSize, uint_32 SectionType) {
+    char* mfile = *mfile_p;
+    size_t newFileSize = 0; //only gets "inited" when new size is calculated
+    size_t fnewSectionSize = GetAligned(newSectionSize, ((ThePE->x64) ? ThePE->WINDF64->FileAlignment : ThePE->WINDF32->FileAlignment)); //for SizeOfImage and SizeOfRawData
+
+    uintptr_t EndOfLastSectionRVA = ThePE->SectionTable[ThePE->PEH->NumberOfSections - 1].VirtualAddress + ThePE->SectionTable[ThePE->PEH->NumberOfSections - 1].VirtualSize;
+
+    uint_32 alignment = ThePE->x64 ? ThePE->WINDF64->SectionAlignment : ThePE->WINDF32->SectionAlignment;
+
+    uintptr_t BeginOfNewSectionRVA = GetAligned(EndOfLastSectionRVA, alignment);
+
+    uintptr_t BeginOfNewSectionFileOffset = ThePE->x64 ? ThePE->WINDF64->SizeofHeaders : ThePE->WINDF32->SizeofHeaders;
+        for (uint_16 i = 0; i < ThePE->PEH->NumberOfSections; i++)BeginOfNewSectionFileOffset += ThePE->SectionTable[i].SizeofRawData;
+
+    //////////////////////////////////////////////////////////////////////relocate the file to correct size
+    //----------- ((                                  initial size                         ) + (        difference between sections       ) + (  size to add  ))
+    newFileSize = ((ThePE->x64) ? ThePE->WINDF64->SizeofImage : ThePE->WINDF32->SizeofImage) + (BeginOfNewSectionRVA - EndOfLastSectionRVA) + (fnewSectionSize);
+    *mfile_p = mfile = (char*)realloc(mfile, newFileSize);
+
+    GetPEElements(mfile, newFileSize, ThePE);            //fix ThePE pointers, that might be broke after the relocation
+
+    //////////////////////////////////////////////////////////////////////Fill new section with 69s
+    memset(mfile + BeginOfNewSectionRVA, 0x69, newSectionSize);                                           //69s
+    memset(mfile + BeginOfNewSectionRVA + newSectionSize, 0x00, fnewSectionSize - newSectionSize);        //pad the rest with zeros
+
+
+
+    //////////////////////////////////////////////////////////////////////Add new section table entry for out new fucking section bitchass
+    SectionTableEntry* OurSectionTableEntry = (SectionTableEntry*)((char*)&ThePE->SectionTable[ThePE->PEH->NumberOfSections - 1] + sizeof(SectionTableEntry));
+    *OurSectionTableEntry = { {0}, (uint_32)newSectionSize, (uint_32)BeginOfNewSectionRVA, (uint_32)fnewSectionSize, (uint_32)BeginOfNewSectionFileOffset, 0, 0, 0, 0, SectionType};
+    *(__int64*)OurSectionTableEntry->Name = *(__int64*)sectionName;
+
+
+    //////////////////////////////////////////////////////////////////////Fix That PE boi
+
+    //            -----------------------------        Code size
+    if(SectionType == SECTION_CODE) ((ThePE->x64) ? ThePE->COFF64->SizeofCode : ThePE->COFF32->SizeofCode)             += fnewSectionSize;    //if it's code, make SizeOfCode bigger 
+    else                            ((ThePE->x64) ? ThePE->COFF64->SizeofInitedData : ThePE->COFF32->SizeofInitedData) += fnewSectionSize;    //if it's data or readonly data, make SizeOfInitializedData bigger
+    //            -----------------------------        Number of sections
+    ThePE->PEH->NumberOfSections += 1;
+    //            -----------------------------        SizeOfImage
+    //            -----------------------------        Size of headers
+    if (ThePE->x64) {
+        ThePE->WINDF64->SizeofImage = GetAligned(EndOfLastSectionRVA + (BeginOfNewSectionRVA - EndOfLastSectionRVA) + (newSectionSize), ThePE->WINDF64->SectionAlignment);
+        ThePE->WINDF64->SizeofHeaders = GetAligned(((char*)OurSectionTableEntry-mfile) + sizeof(SectionTableEntry), ThePE->WINDF64->FileAlignment);
+    } else {
+        ThePE->WINDF32->SizeofImage = GetAligned(EndOfLastSectionRVA + (BeginOfNewSectionRVA - EndOfLastSectionRVA) + (newSectionSize), ThePE->WINDF32->SectionAlignment);
+        ThePE->WINDF32->SizeofHeaders = GetAligned(((char*)OurSectionTableEntry - mfile) + sizeof(SectionTableEntry), ThePE->WINDF32->FileAlignment);
+    }
+
+    return BeginOfNewSectionRVA + fnewSectionSize; //return the size of the binary in memory
+}
+```
+
+
+[h20][<~It Working~>]
+
+I made 5 startup params, comments go:
+```c
+//argv[1] - binary to add section to
+//argv[2] - output file
+//argv[3] - section name (7 characters or less)
+//argv[4] - section length
+//argv[5] - section type (-c = code | -d = rw data | -r = readonly data)
+```
+So, given a binary to which the code is:
+```c
+uint_32 globel = 0;
+
+int main(int argc, char const *argv[]){
+	printf("thenumba: %d\n", globel);
+	getchar();
+}
+```
+And feed it to the section extender as ``>SectionExtender.exe "peanes_.exe" patched.exe .gaylol 128 -c``
+Out will come:
+[img src="https://imgur.com/Td5HZcW.png"]
+
+And if we check the file at the provided offset we'll get:
+[img src="https://imgur.com/v1tfvmF.png"]
+
+Which we can see in memory looks like:
+[img src="https://imgur.com/7Q3kh64.png"]
+
+Dumping the PE for sections will yeild:
+[img src="https://imgur.com/bvW1BOz.png"]
+
+And works just fine
+[img src="https://imgur.com/dmp5rds.png"]
+
+
+[h20][<~End~>]
+
+So ye, that's pretty much just it, next post will somewhat show the use for a tool like this, it'll be about hooking the entry point.
+
+And as Alyssa from [__ITALIAN][<~The End of the Fucking World~>] would say, [__BOLD][<~[__ITALIAN][<~fanks~>]~>].
+
+
+
+ 
