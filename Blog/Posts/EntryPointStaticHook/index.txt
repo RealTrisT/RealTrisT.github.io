@@ -1,0 +1,107 @@
+
+[__TITLE__][<~Proof of concept: Statically Hooking Entry Point~>]
+
+[h20][<~Easy~>]
+
+So this isn't anything complicated or special, I just wanted it not to be in the [__LINK="?w=SectionAppender"][<~previous post~>].
+
+
+[h20][<~Usefulness~>]
+
+So it might seem pretty useless right?
+Of all the things you can hook, why would you hook fkn entry point!? Furthermore statically! What a crazy dumb motherfucker.
+Well, it can be really useful to have your own code run before the program "starts" for a multitude of reasons.
+Let's say for instance, you're trying to hack a game, but it has a very decent anti-cheat that does some handle stripping, maybe sets the ThreadHideFromDebugger, or some other shit you'd rather not have to go down into kernel mode to deal with.
+Let's say this is a game that doesn't have a launcher.
+You could for example create 2 sections in that file, one data, and one code.
+In the data one, you'd put a dll.
+In the code one, you'd put a stub (big-ass one), that'd manual map the dll in the data section, and then revert the state of the whole file in memory to it's original state.
+This way, you'd have a dll of your choosing running on that process, and would at the same time be able to avoid integrity checks, all without even running a separate process.
+
+
+[h20][<~Concept~>]
+
+So it's pretty simple, and consists of 3 steps:
+  1. Find space to put a stub, you can do that by creating a new section, or codecaving .text.
+  2. Change the entry point RVA value in the windows optional headers to the beginning of your stub.
+  3. Jump back to the original entry point from the end of your stub.
+
+You can, alternatively, and with more (might I add pointless) effort, just place a jump in the original entry point and copy the opcodes overridden to your stub, and then jump back to the end of the space taken. Basically like a normal hook.
+
+
+[h20][<~Execution~>]
+
+This is a (really) short example.
+
+So the test program is gonna be the same as last post:
+```c
+uint_32 globel = 0;
+
+int main(int argc, char const *argv[]){
+	printf("thenumba: %d\n", globel);
+	getchar();
+}
+```
+
+The output will, obviously, be:
+[img src="https://imgur.com/dmp5rds.png"]
+
+The objective is to change that 0 to a 69 (0x45), without changing it's value in file directly (so by running code that does it).
+
+And here's the data:
+  globel: ``patched.exe+0x3620``
+  entry point: ``patched.exe+0x133C``
+
+First of all, we're gonna need to change the entry point to our new section, if we check in the last post we can see the RVA of this new section is 0x7000 (that's where our stub will be):
+[img src="https://imgur.com/Td5HZcW.png"]
+
+So we change the entry point:
+[img src="https://imgur.com/AymrSGu.png"]
+into 0x7000
+[img src="https://imgur.com/TAhi88t.png"]
+
+The entry point pointer should now point to our stub.
+[img src="https://imgur.com/ljy9vCT.png"]
+
+Problem is, we don't have a stub. So let's go make one.
+
+First of all, we need to put a 69 into that value.
+
+``mov DWORD PTR [rip+globel_offset], 0x45`` should do the trick
+
+But we first need to know what that globel_offset is. The way you calculate offsets in x86 is ``target - end_of_current_instruction``.
+
+Since we can [__LINK="https://defuse.ca/online-x86-assembler.htm"][<~assemble~>] that instruction with a dummy offset, we can know it's length:
+[img src="https://imgur.com/cPlmCO9.png"]
+
+So the length is 10.
+
+Now we know that that offset will be ``0x3620 - 0x700A = 0xFFFFC616``, and thus, our instruction will be ``mov DWORD PTR [rip+0xFFFFC616], 0x45``, which in turn is ``C7 05 16 C6 FF FF 45 00 00 00``.
+
+Now all we need is a short jump (0xE9) back to our entry point. 
+Those are length 5, so offset will be ``0x133C - 0x700F = 0xFFFFA32D``, and we will thus have ``jmp 0xFFFFA32D`` as ``E9 2D A3 FF FF``.
+
+
+We now glue it together and shit it to our new section:
+[img src="https://imgur.com/YcWCozd.png"]
+
+And run:
+[img src="https://imgur.com/K7gaamG.png"]
+
+Et Voilà!
+
+
+[h20][<~End~>]
+
+Making stubs manually, and specially with rip-relative offsets is a pain in the ass, and you shouldn't do it. 
+You should try and automate the process as much as possible.
+
+Maybe for something like the example of manual mapping, grab the whole function off of another binary, as well as some code that calls it (so that by the end stack and registers are all fine), and go from there.
+
+
+This has been fun and I'm tired. Hope you had a nice read, Imma eat shit and die. (shit being moderately decent food, and dying the action of the sleep).
+
+
+
+
+
