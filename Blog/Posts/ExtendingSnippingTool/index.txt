@@ -1,0 +1,226 @@
+
+[__TITLE__][<~Extending: Snipping Tool~>]
+
+
+[h20][<~What and Why~>]
+Basically what I'm looking for is to save a snip every time you click the copy button (the one that copies it to the clipboard).
+So then you'll have all your edited snips saved, and will be able to win necroed online arguments with your old .pngs.
+
+
+
+[h20][<~Getting Into It~>]
+
+Right, so I think most stuff in system32 comes with debug info in what comes to tools, explorer did, and so did the snipping tool.
+I need to get good at RE, and I don't really think there's a source even though they leave debug info, so I went the RE way, only thing I didn't loose time with was some function names.
+
+I've found this;
+```
+10ACC ; __int64 __fastcall CSnip::SaveAs(CSnip *this, const unsigned __int16 *A_FileName, int a3)  	//saves shit to file
+```
+And it gets called after the file picking dialog. It has the filename as a param, and it looks like it's the thing that actually does the saving.
+It calls GdipSaveImageToFile so I'd say I'm on it.
+
+So now I need to do a few things:
+Find where the pointer to that CSnip instance is.
+Find whatever triggers the copy to clipboard thing.
+
+As the save only occurs after you click another button, maybe xrefing it won't be that bad an idea.
+[img src="https://imgur.com/grxfpOD.png"]
+
+And IDA will present you with something great:
+[img src="https://imgur.com/6MqAKQv.png"]
+
+And even though ``CEditor::SaveSnip`` is a big-ass function, v89 just happens to be the this pointer!
+
+So now we know that ``CEditor+0x123`` is what's holding the CSnip instance.
+
+Let's bp CEditor::SaveSnip and see if that's called as we hit the save button and before the dialog.
+
+Indeed it is! Feeling lucky today.
+
+So, since that's high level, why not check all the other ones, maybe a clipboard function?
+[img src="https://imgur.com/sopZySZ.png"]
+
+Feelsgoodman.
+
+Right, so bping it fires in 2 situations.
+When you click the copy button, as expected, but also when you click the "new" one?
+
+Aight that's weird.
+But it does call ``CEditorPanel::UpdateAnnotatedBitmap``, so wild guess, it updates the bitmap first, then copies it to clipboard, so the function is executed before it's set, but finishes after it's set and copied to clipboard.
+
+It only has 1 ret, so might as well bp to confirm my hypothesis.
+
+Hypothesis: wrong.
+
+:thinking:
+
+Bruh.
+If you look at the previous function, you will notice that I was looking at ``CEditorPanel::CopyToClipboard`` for ``CEditor::CopyToClipboard`` doesn't exist.
+
+Aight gonna xref it to try and find some CEditor stuff.
+[img src="https://imgur.com/tn8Lwhg.png"]
+
+Noice.
+So since we got windowprocs and stuff, this probably means we're gonna have to deal with button clicks directly, which I was trying to avoid cuz mid-function hooks.
+
+There's still hope tho. I bp'd CopyToClipboard and clicked the copy button, after execute till return and a jump, I found myself in CommandProc.
+This might have been obvious if I'd done more stuff with the windows UI apis.
+
+Good news is I found it has a switch there, so this might still be not stupid to achieve after all.
+
+CopyToClipboard is called in case 6.
+
+Since IDA's analysis failed, I'm gonna have to look at the assembly directly.
+
+After about 10 minutes I figured it out. I'm sorry, I'd never played around with switch tables and that type of bullshit.
+
+There's this:
+```c
+lea eax, [rbx-9C4Bh]
+```
+Which is preceeded by this:
+```c
+movzx ebx, r8w
+```
+
+So now I know that we have something similar to: ``switch(param2 - 0x9C4B)`` (provided it's a thiscall and we're not counting with the this pointer).
+
+I've also learned that, eax is [__ITALIAN][<~seemingly~>] the register of choice for msvc switch tables.
+
+So now all I gotta do is hook that boi, check if ``arg3 - 0x9C4B`` is 6, and then if it is, call CSnip::SaveAs with ``*(param1+0x123)``, path and what would seem to always be a third param of 0 (though I think it might actually be something like "override existing file?").
+
+So let's make some notes:
+```
+1B5DC __int64 __fastcall CEditor::CommandProc(CEditor *__hidden this, unsigned __int16, unsigned __int16, __int64)
+10ACC __int64 __fastcall CSnip::SaveAs(CSnip *this, const unsigned __int16 *A_FileName, int a3)
+```
+And now so we don't have to write all the asm by hand, we can code it in c++ with some dummy functions:
+[img src="https://imgur.com/QrAmM2N.png"]
+
+So now we can just grab the generated code, throw in some magic, and be done.
+But first, we've got to extend the binary so we can add our code:
+[img src="https://imgur.com/ngrDUnv.png"]
+
+Which, when you turn off optimization, turns into:
+[img src="https://imgur.com/NGIx5Ww.png"]
+
+Now that's a bit overkill, maybe next time I do this I'll try and run around optimization so everything goes as I want to, it's fast, and not this much of a code wall.
+But at least this way you can be almost sure there will be no crashes.
+
+So we've got
+```hex
+4C 89 4C 24 20 
+66 44 89 44 24 18 
+66 89 54 24 10 
+48 89 4C 24 08 
+48 83 EC 28 
+0F B7 44 24 40 
+2D 4B 9C 00 00 
+83 F8 06 
+75 1B 
+45 33 C0 
+48 8D 15 EE 21 00 00 
+48 8B 44 24 30 
+48 8B 88 23 01 00 00 
+E8 2D 00 00 00 
+4C 8B 4C 24 48 
+44 0F B7 44 24 40 
+0F B7 54 24 38 
+48 8B 4C 24 30 
+E8 73 FF FF FF 
+48 83 C4 28 
+C3
+```
+Now the things we gotta fix:
+1. The offset to CSnip::SaveAs
+2. The offset to CEditor::CommandProc
+3. The offset to our string
+4. Copy that string to our section
+5. Make that ``call ComandProc; add rsp, 28h; retn;`` just ``add rsp, 20h; OpcodesOverriddenFromOriginalCommandproc; jmp AfterOpcodesOverriddenInOriginalCommandproc;``
+
+Right. So, since our section, and therefore code is gonna be at 7A000, we do rebase the test program to ``7A000 - beginOfDetour``, so we get:
+[img src="https://imgur.com/Z6tMO89.png"]
+
+And now we can see our stub has size 0x62, so we'll put our path string at 0x62, meaning we can change the offset right away: ``7A062 - 7A032 = 30``, big endian for ``30 00 00 00``.
+
+And fixing stuff with a jump is simple, first of all, we get all our stuff right again, so ``add rsp, 28h`` should be the first thing to go back into place.
+Then we're gonna replace the first 5 bytes of the original function, so we paste the opcodes after.
+Then just place the jump.
+
+SaveAs is at 10ACC, so ``10ACC - 7A043 = FFF96A89``, big endian for ``89 6A F9 FF``
+
+But now that our stub size is 0x66, we're putting the string firther 4 bytes, ``7A066 - 7A032 = 34``, so just fix that real quick.
+
+And at last, the commandproc: ``(1B5DC+5) aka 1B5E1 - 7A066 = FFFA157B``, big endian for ``7B 15 FA FF``
+
+We end up with:
+```hex
+4C 89 4C 24 20 		 //save r9
+66 44 89 44 24 18 	 //save r8w
+66 89 54 24 10 		 //save dx
+48 89 4C 24 08 		 //save rcx
+48 83 EC 28 		 //subtract 20h stack
+0F B7 44 24 40 		 //eax = param3
+2D 4B 9C 00 00 		 //eax -= 9C4B
+83 F8 06 		 //cmp eax, 6
+75 1B 			 //jump
+45 33 C0 		 //r8d = 0
+48 8D 15 34 00 00 00	 //load our string into rdx
+48 8B 44 24 30 		 //rax = pointer to CEditor
+48 8B 88 23 01 00 00	 //rcx = rax + 0x123
+E8 89 6A F9 FF 		 //call SaveAs
+4C 8B 4C 24 48 		 //load back r9
+44 0F B7 44 24 40 	 //load back r8d
+0F B7 54 24 38 		 //load back edx
+48 8B 4C 24 30 		 //load back rcx
+48 83 C4 28 		 //add rsp, 28h
+40 55			 //   \
+57			 //    > The initial part of CommandProc
+41 56			 //   /
+E9 7B 15 FA FF 		 //jump to commandproc
+```
+
+So, the total stub with the string included is gonna be:
+```hex
+4C 89 4C 24 20 66 44 89 44 24 18 66 89 54 24 10 48 89 4C 24 08 48 83 EC 28 0F B7 44 24 40 2D 4B 9C 00 00 83 F8 06 75 1B 45 33 C0 48 8D 15 34 00 00 00 48 8B 44 24 30 48 8B 88 23 01 00 00 E8 89 6A F9 FF 4C 8B 4C 24 48 44 0F B7 44 24 40 0F B7 54 24 38 48 8B 4C 24 30 48 83 C4 28 40 55 57 41 56 E9 7B 15 FA FF 43 00 3A 00 5C 00 5C 00 55 00 73 00 65 00 72 00 73 00 5C 00 5C 00 54 00 72 00 69 00 73 00 54 00 5C 00 44 00 65 00 73 00 6B 00 74 00 6F 00 70 00 5C 00 5C 00 66 00 75 00 69 00 6C 00 65 00 73 00 5C 00 5C 00 68 00 61 00 63 00 6B 00 73 00 5C 00 5C 00 4D 00 69 00 6E 00 65 00 5C 00 5C 00 44 00 75 00 6D 00 62 00 20 00 4C 00 69 00 74 00 74 00 6C 00 65 00 20 00 50 00 72 00 6F 00 6A 00 65 00 63 00 74 00 73 00 5C 00 5C 00 53 00 6E 00 69 00 70 00 70 00 69 00 6E 00 67 00 20 00 54 00 6F 00 6F 00 6C 00 20 00 45 00 78 00 70 00 61 00 6E 00 73 00 69 00 6F 00 6E 00 5C 00 5C 00 74 00 65 00 73 00 74 00 73 00 61 00 76 00 65 00 73 00 5C 00 5C 00 6C 00 38 00 72 00 2E 00 70 00 6E 00 67 00 00 00
+```
+That in file looks like:
+[img src="https://imgur.com/qsTpyHW.png"]
+
+Now all that's left is to place a jump in the original commandproc, and we should be set. ``7A000 - 1B5E1 = 5EA1F``, big endian for ``1F EA 05 00``:
+[img src="https://imgur.com/cceGOV5.png"]
+
+Just to be sure, better open it in IDA.
+[img src="https://imgur.com/PWCJeDm.png"]
+
+The jump is there, and it jumps to:
+[img src="https://imgur.com/OU95AIz.png"]
+
+Which looks about right. Jumps all go to the right place, string pointed to nicely, so we should be set.
+
+Bruh it crashes. Time for debuggau.
+I must have gone way wrong with that offset.
+
+[img src="https://imgur.com/F4yDrsd.png"]
+
+And that's what you get for trusting IDA's decompiler, ucrash.
+Tbf tho it was my bad, I thought, "you know what, I'm retarded so I'm just gonna completely discard pointer arithmetic".
+I don't know how I keep doing it.
+
+
+Right, so make that ``48 8B 88 23 01 00 00`` a ``48 8B 88 18 09 00 00``, and maybe it'll be ok.
+
+[img src="https://imgur.com/Qd4OXQY.png"]
+
+WINNING.
+
+
+[h20][<~End~>]
+
+Right, so I think we can all agree this is pretty poor work, all it does is save the picture to "l8r.png", it will be overridden if you do another, just generally shitty.
+
+So this isn't the end. The only time-related import this binary has is "GetSystemTimeAsFileTime", so I'm thinking maybe somehow convert it to either a data or just a number, and save it like that. 
+Maybe then make some tool or option to set the path. Honestly with doing it this way I don't see how it'd possible asside from making something to hardcode the values, since you can't change the executable file while you're running the program.
+
+Anyhow, hope you had fun, I did, and now Imma take a piss and eat, l8r.png.
