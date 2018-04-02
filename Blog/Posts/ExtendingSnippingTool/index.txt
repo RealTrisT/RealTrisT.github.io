@@ -220,7 +220,7 @@ WINNING.
 
 Right, so I think we can all agree this is pretty poor work, all it does is save the picture to "l8r.png", it will be overridden if you do another, just generally shitty.
 
-So this isn't the end. The only time-related import this binary has is "GetSystemTimeAsFileTime", so I'm thinking maybe somehow convert it to either a data or just a number, and save it like that. 
+So this isn't the end. The only time-related import this binary has is "GetSystemTimeAsFileTime", so I'm thinking maybe somehow convert it to either a date or just a number, and save it like that. 
 Maybe then make some tool or option to set the path. Honestly with doing it this way I don't see how it'd possible asside from making something to hardcode the values, since you can't change the executable file while you're running the program.
 
 Anyhow, hope you had fun, I did, and now Imma take a piss and eat, l8r.png.
