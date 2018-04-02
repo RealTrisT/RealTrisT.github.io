@@ -215,6 +215,8 @@ Right, so make that ``48 8B 88 23 01 00 00`` a ``48 8B 88 18 09 00 00``, and may
 
 WINNING.
 
+[__YOUTUBE src="eFZ6f2iwzU0"]
+
 
 [h20][<~End~>]
 
