@@ -28,3 +28,10 @@ So this is important since this is how an opcode works.
 [img src="https://imgur.com/Iqvwqk1.png"]
 
 I've sorta read on this a bit before, and I remember there were a fixed set of instruction prefixes, so might start from there.
+
+Got 600 pages to read, so ye.
+
+Right so first thing first, how the thing's gonna be.
+I'm thinking making a structure and having some flags to indicate the operands, size etc..
+
+So. ``Opcode.h`` is on it's way.
