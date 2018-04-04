@@ -8,7 +8,7 @@ A disassembler, that is fully modular and displays as much data as possible.
 
 [h20][<~Why~>]
 
-I've needed to make a disassembler for a while now, because of multiple projects that I've worked on where one would have come in quite handy.
+I've needed to make a disassembler for a while now, because of multiple projects that I've worked on where one would have come in quite handy. (for example the section extender, that had to become a section appender)
 
 There's already capstone and shit, but I want to learn as much as possible about the x86 architecture because it genuinely interests me, and what better way of doing that than coding a disassembler.
 
