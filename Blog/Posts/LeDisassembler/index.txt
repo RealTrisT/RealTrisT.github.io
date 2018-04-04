@@ -51,3 +51,7 @@ There are 4 groups:
 -Segment Override
 -Operand-size Override
 -Address-Size Override
+
+The last 2 are just one thing each, 0x66 or 0x67 respectively.
+The first two aren't so simple, with different prefixes for different situations, and different uses for the same prefix depending on context.
+
