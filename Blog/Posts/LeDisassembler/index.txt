@@ -37,3 +37,13 @@ I'm thinking making a structure and having some flags to indicate the operands, 
 So. ``Opcode.h`` is on it's way.
 
 Since I'm not just making a size calculator I think I might make private members for instruction prefixes, opcode, modR/M, etc..
+
+
+
+
+[h6][<~Instruction prefixes~>]
+
+
+So instruction prefixes are 1 byte each, and multiple can be used, so I think Imma make it a flag.
+
+There are 4 groups:
