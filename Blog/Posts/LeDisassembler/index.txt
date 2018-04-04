@@ -22,4 +22,9 @@ With the power of a disassembler I coded myself, I will become a god of the bina
 
 [h20][<~It.~>]
 
+
+So this is important since this is how an opcode works.
+
 [img src="https://imgur.com/Iqvwqk1.png"]
+
+I've sorta read on this a bit before, and I remember there were a fixed set of instruction prefixes, so might start from there.
