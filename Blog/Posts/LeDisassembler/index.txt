@@ -31,7 +31,7 @@ I've sorta read on this a bit before, and I remember there were a fixed set of i
 
 Got 600 pages to read, so ye.
 
-Right so first thing first, how the thing's gonna be.
+Right so first things first, how the thing's gonna be.
 I'm thinking making a structure and having some flags to indicate the operands, size etc..
 
 So. ``Opcode.h`` is on it's way.
@@ -55,3 +55,10 @@ There are 4 groups:
 The last 2 are just one thing each, 0x66 or 0x67 respectively.
 The first two aren't so simple, with different prefixes for different situations, and different uses for the same prefix depending on context.
 
+More info on this is on page 36.
+
+
+
+[h6][<~Opcodes~>]
+
+Oh boy, this is the hadpat.
