@@ -1,0 +1,25 @@
+
+[__TITLE__][<~Project: LeDisassembler~>]
+
+[h20][<~What~>]
+
+A disassembler, that is fully modular and displays as much data as possible.
+
+
+[h20][<~Why~>]
+
+I've needed to make a disassembler for a while now, because of multiple projects that I've worked on where one would have come in quite handy.
+
+There's already capstone and shit, but I want to learn as much as possible about the x86 architecture because it genuinely interests me, and what better way of doing that than coding a disassembler.
+
+With the power of a disassembler I coded myself, I will become a god of the binary.
+
+
+[h20][<~Resauce~>]
+
+[__LINK="https://software.intel.com/sites/default/files/managed/ad/01/253666-sdm-vol-2a.pdf"][<~The intel docs on x86 (2A), the part that matters.~>
+
+
+[h20][<~It.~>]
+
+[img src="https://imgur.com/Iqvwqk1.png"]
