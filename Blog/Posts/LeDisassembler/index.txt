@@ -23,7 +23,7 @@ With the power of a disassembler I coded myself, I will become a god of the bina
 [h20][<~It.~>]
 
 
-So this is important since this is how an opcode works.
+So this is important since this is how an instruction works.
 
 [img src="https://imgur.com/Iqvwqk1.png"]
 
@@ -47,3 +47,7 @@ Since I'm not just making a size calculator I think I might make private members
 So instruction prefixes are 1 byte each, and multiple can be used, so I think Imma make it a flag.
 
 There are 4 groups:
+-Lock/Repeat
+-Segment Override
+-Operand-size Override
+-Address-Size Override
