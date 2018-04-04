@@ -17,10 +17,9 @@ With the power of a disassembler I coded myself, I will become a god of the bina
 
 [h20][<~Resauce~>]
 
-[__LINK="https://software.intel.com/sites/default/files/managed/ad/01/253666-sdm-vol-2a.pdf"][<~The intel docs on x86 (2A), the part that matters.~>
+[__LINK="https://software.intel.com/sites/default/files/managed/ad/01/253666-sdm-vol-2a.pdf"][<~The intel docs on x86 (2A), the part that matters.~>]
 
 
 [h20][<~It.~>]
 
 [img src="https://imgur.com/Iqvwqk1.png"]
-  
