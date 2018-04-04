@@ -35,3 +35,5 @@ Right so first thing first, how the thing's gonna be.
 I'm thinking making a structure and having some flags to indicate the operands, size etc..
 
 So. ``Opcode.h`` is on it's way.
+
+Since I'm not just making a size calculator I think I might make private members for instruction prefixes, opcode, modR/M, etc..
