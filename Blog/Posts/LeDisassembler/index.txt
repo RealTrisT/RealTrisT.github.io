@@ -168,3 +168,16 @@ So, the 16 bit variant of edx is dx.
 So since that's the only difference, and as we saw in the last image, the second operand depended on the addressing mode, we should this time get:
 
 ``mov [bx+si], dx``
+
+
+
+[h6][<~Implementation~>]
+
+So, now I've gotten around to experimenting with this stuff, add I've tried starting an implementation of some of it, a few problems arose.
+
+There are 4 different types of opcodes:
+-The ones that are fixed, will always all the same, and either have no operands, or they're defined in full by the ModR/M byte.
+-The ones that will change depending on the register
+-The ones that will always have the same primary offset, but will change based on the Register/Opcode field.
+
+For example the instruction 0x80, where it can be an ``ADD``, ``OR``, ADC``, ``SBB``, ``AND``, ``SUB``, ``XOR``, or ``CMP``, depending on the Register/Opcode field.
