@@ -112,6 +112,7 @@ For example the base-plus-index and scale-plus-index forms of 32-bit addressing 
 SIB has the fields scale, index, and base.
 
 
+
 [h6][<~Displacement/Immediate~>]
 
 ```txt
@@ -121,3 +122,10 @@ If an instruction specifies an immediate operand, the operand always follows any
 operand can be 1, 2 or 4 bytes.
 ```
 Basically displacement is address and immediate is value (I think rn, might be wrong).
+
+
+
+[h6][<~Addressing-Mode Encoding of ModR/M and SIB Bytes~>]
+
+So this is a massive shit-tone of text, give me a sec. xd.
+
