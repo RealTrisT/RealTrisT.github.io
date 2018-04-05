@@ -84,4 +84,12 @@ So the main takeaway is this:
 ```txt
 Many instructions that refer to an operand in memory have an addressing-form specifier byte (called the ModR/M byte) following the primary opcode.
 ```
+Let's first start by reminding ourselves of the pic above.
 
+It was highly useful for me, since back when I tried looking into this the first time, the ModR/M byte was a complete monster to me, that I really couldn't understand.
+
+Bot now it's broken down([h2][<~aren't monospace fonts great~>]):
+```txt
+7    6 5          3 2    0
+| Mod | Reg/Opcode | R/M |
+```
