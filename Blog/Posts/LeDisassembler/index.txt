@@ -78,7 +78,7 @@ Tho honestly, I'd advise reading 2.1.2, it's highly informative. But read it rea
 
 
 
-[h6][<~Opcodes~>]
+[h6][<~ModR/M~>]
 
 So the main takeaway is this:
 ```txt
@@ -95,4 +95,6 @@ Bot now it's broken down([h2][<~aren't monospace fonts great~>]):
 ```
 This is the 2.1.3 section, and I really don't think I can explain it any better than it is.
 
-The mod and r/m fields come together to form 32 possible values (2^3)
+The mod and r/m fields come together to form 32 possible values (2^(power of)5 = 32), that is 8 registers, and 24 addressing modes.
+
+The reg/opcode, is exactly it. Either a register, or the rest of the opcode information. That is determined by the primary opcode itself.
