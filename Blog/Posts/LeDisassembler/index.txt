@@ -210,5 +210,14 @@ For 32 bit addressing mode it'll be according to the above table (I'll place it 
 
 [h6][<~Implementation~>]
 
+So, since the ModRM byte is so important, we need a decent way to access it, I came up with this:
+```cpp
+union ModRMByte{
+	unsigned char Byte = 0;
+	struct RegOpcByte_Bitfield { unsigned char RM : 3, RegOpc : 3, Mod : 2; } Byte_Bitfield;
+	//mind the retarded bitfield endianness
+};
+```
+If you don't know how a union works, you should prob go read about it, but basically it shares the same memory across the variables you put in it. 
+Good for polymorphism, i.e. if in a class you wanna have an int but in another a float you can use it to not waste space, but you can use it this way as well. I often do it for pointers so no casts, and it comes handy here as well.
 
-So, since the ModRM byte is so important
