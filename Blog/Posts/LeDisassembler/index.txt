@@ -121,7 +121,7 @@ present). If a displacement is required, it can be 1, 2, or 4 bytes.
 If an instruction specifies an immediate operand, the operand always follows any displacement bytes. An immediate
 operand can be 1, 2 or 4 bytes.
 ```
-Basically displacement is address and immediate is value (I think rn, might be wrong).
+Basically displacement is relative address and immediate is value (I think rn, might be wrong).
 
 
 
