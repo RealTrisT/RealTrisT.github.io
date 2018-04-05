@@ -56,7 +56,7 @@ There are 4 groups:
 The last 2 are just one thing each, 0x66 or 0x67 respectively. Somewhat self explanatory.
 The first two aren't so simple, with different prefixes for different situations, and different uses for the same prefix depending on context.
 
-More info on this is on page 36.
+More info on this is on page 36, I'd advise skipping the bulletpoints.
 
 
 
