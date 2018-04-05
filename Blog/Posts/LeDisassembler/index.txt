@@ -197,6 +197,11 @@ Register numbers go as follows:
 #define REG_NR_EDI 0x7
 ```
 
+Third, can be for example the instructions 0x80-0x83, where it can be an ``ADD``, ``OR``, ``ADC``, ``SBB``, ``AND``, ``SUB``, ``XOR``, or ``CMP``, depending on the Register/Opcode field.
 
+So if R/O is 3 bits, that leaves ``2 ^(power of) 3 = 8`` possibilities, as we can count ^upthere.
 
-For example the instruction 0x80, where it can be an ``ADD``, ``OR``, ADC``, ``SBB``, ``AND``, ``SUB``, ``XOR``, or ``CMP``, depending on the Register/Opcode field.
+So for example provided we want to do ``sub register, number`` for 8bit, we'll use 0x80 since that's the one that deals with 8bits, we'll also make sure the Register/Opcode field is 5 to "select" sub, and then Mod and R/M will tell which register to use.
+
+For 32 bit addressing mode it'll be according to the above table (I'll place it here again for visualization's sake):
+[img src="https://imgur.com/aM222eI.png"]
