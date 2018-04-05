@@ -67,7 +67,7 @@ Oh boy, this is the hadpat.
 The main takeaway is this: ```txt
 A primary opcode can be 1, 2, or 3 bytes in length. An additional 3-bit opcode field is sometimes encoded in the ModR/M byte.
 ```
-Two-byte opcode formats for general-purpose and SIMD (Single instruction, multiple data) instructions consist of a 0x0F (an escape code as the primary opcode, not to be confused with LOCK prefix's 0xF0) and an second opcode byte, and "optionally" a mandatory prefix in the beginning of all that.
+Two-byte opcode formats for general-purpose and SIMD (Single instruction, multiple data) instructions consist of a 0x0F (an escape code as the primary opcode, not to be confused with LOCK prefix's 0xF0) and an second opcode byte, and "optionally" a mandatory prefix in the beginning of all that (0x66, 0xF2 or 0xF3).
 [h2][<~"optionally" cuz it has to be there for some opcodes, and not for others~>]
 
 Three-byte opcodes for general-purpose and SIMD instructions are basically the same but instead of one additional opcode byte, it has two.
@@ -129,3 +129,7 @@ Basically displacement is relative address and immediate is value (I think rn, m
 
 So this is a massive shit-tone of text, give me a sec. xd.
 
+Ok, so the main takeaway are these tables:
+[img src="https://imgur.com/8DsvAXZ.png"]
+[img src="https://imgur.com/ueZuW61.png"]
+[img src="https://imgur.com/DPOtyhM.png"]
