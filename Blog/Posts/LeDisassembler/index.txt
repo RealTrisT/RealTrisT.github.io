@@ -138,14 +138,16 @@ There are 3 tables, first for 16-bit addressing, second for 32, and third for SI
 
 Provided we're in 32, the first table will only come in handy when the opcode is preceeded by the Address-Size Override prefix.
 
+
 [h5][<~Example:~>]
+
 Opcode ``67 89 10``
 
 67: Address-Size Override prefix
 89: Opcode mov(where the 2nd operand is the default addressing mode (32 in this case))
-10: ModR/M, that if we check on the table, we can see first operand is [bx+si], and second el/ex/edx. Which it is is gonna depend on the opcode.
+10: ModR/M, that if we check on the table, we can see first operand is [bx+si], and second el/ex/edx. Which it is gonna depend on the opcode.
 
-Now if we check an opcode table:
+Now if we check an [__LINK="http://ref.x86asm.net/coder32.html"][<~opcode table~>]:
 [img src="https://imgur.com/jJvrh7y.png"]
 
 We'll see that the second operand is a register, either 16 or 32, and since default addressing mode is 32, we'll get edx.
