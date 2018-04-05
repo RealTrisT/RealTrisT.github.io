@@ -224,4 +224,4 @@ union ModRMByte{
 Good for polymorphism, i.e. if in a class you wanna have an int but in another a float you can use it to not waste space, but you can use it this way as well. I often do it for pointers to structures that can be different so no casts are needed (mostly the PE 64 vs 32 stuff).
 
 
-So, as far as I can tell, it all just boils down
+So, as far as I can tell, it all just boils down seeing what the opcode asks for, and then correctly reading the ModR/M byte if one must be present to meet the necessities of the opcode, taking into account the prefixes.
