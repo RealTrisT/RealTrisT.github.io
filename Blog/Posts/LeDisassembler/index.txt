@@ -138,7 +138,7 @@ There are 3 tables, first for 16-bit addressing, second for 32, and third for SI
 
 Provided we're in 32, the first table will only come in handy when the opcode is preceeded by the Address-Size Override prefix.
 
-Example:
+[h5][<~Example:~>]
 Opcode ``67 89 10``
 
 67: Address-Size Override prefix
@@ -150,9 +150,12 @@ Now if we check an opcode table:
 
 We'll see that the second operand is a register, either 16 or 32, and since default addressing mode is 32, we'll get edx.
 
-The first operand doesn't matter since we've already got everything from ModR/M
+The first operand doesn't matter since we've already got everything from ModR/M, so finally, we get:
 
-Example 2:
+``mov [bx+si], edx``
+
+
+[h5][<~Example 2:~>]
 
 Opcode ``67 66 89 10``
 
@@ -160,4 +163,6 @@ It's basically the same as the previous example, but has that 66 there.
 That changes the addressing mode, and since current is 32, it'll become 16.
 So, the 16 bit variant of edx is dx.
 
-So since that's the only difference, and as we saw in the last image, the sec
+So since that's the only difference, and as we saw in the last image, the second operand depended on the addressing mode, we should this time get:
+
+``mov [bx+si], dx``
