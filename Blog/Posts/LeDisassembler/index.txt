@@ -64,11 +64,12 @@ More info on this is on page 36, I'd advise skipping the bulletpoints.
 
 Oh boy, this is the hadpat.
 
-The main takeaway is this: ``A primary opcode can be 1, 2, or 3 bytes in length. An additional 3-bit opcode field is sometimes encoded in the
-ModR/M byte.``
-
-Two-byte opcode formats for general-purpose and SIMD (Single instruction, multiple data) instructions consist of either a 0x0F (as an escape code, not to be confused with LOCK prefix's 0xF0) and a second opcode byte, or a one of the mandatory prefixes (also considered an escape opcode) and a second opcode byte.
+The main takeaway is this: ```txt
+A primary opcode can be 1, 2, or 3 bytes in length. An additional 3-bit opcode field is sometimes encoded in the ModR/M byte.
+```
+Two-byte opcode formats for general-purpose and SIMD (Single instruction, multiple data) instructions consist of a 0x0F (as an escape code, not to be confused with LOCK prefix's 0xF0) and an second opcode byte, and "optionally" a mandatory prefix in the beginning of all that.
+[h2][<~"optionally" cuz it has to be there for some opcodes, and not for others~>]
 
 Three-byte opcodes for general-purpose and SIMD instructions are basically the same but instead of one additional opcode byte, it has two.
 
-Tho honestly, I'd advise reading 2.1.2, it's highly informative.
+Tho honestly, I'd advise reading 2.1.2, it's highly informative. But read it real slow, you get 1 letter or 1 comma worng and you'll be confused senseless. Or maybe it's just me.
