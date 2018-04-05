@@ -226,7 +226,7 @@ Good for polymorphism, i.e. if in a class you wanna have an int but in another a
 
 So, as far as I can tell, it all just boils down seeing what the opcode asks for, and then correctly reading the ModR/M byte if one must be present to meet the necessities of the opcode, taking into account the prefixes.
 
-So, first I needed a list of opcodes and the way they work, so I went [__LINK=""][<~here~>], made a little shitty js script to get the code:
+So, first I needed a list of opcodes and the way they work, so I went [__LINK="http://ref.x86asm.net/coder32.html"][<~here~>], made a little shitty js script to get the code:
 
 ```js
 const PrefixCell = 0;
@@ -299,3 +299,6 @@ for (var i = 1, row; row = table.rows[i]; i++) {
 }
 console.log(streng.replace(/(?:<b>|<_b>|<i>|<_i>|<\/i>|<b>|<\/b>)/g, "").replace(/:/g, "or"));
 ```
+
+
+Right now I'm only going for the non-0F-escaped ones, so the second part might come later, might not.
