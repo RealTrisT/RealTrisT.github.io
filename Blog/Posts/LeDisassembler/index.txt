@@ -180,5 +180,23 @@ There are 4 different types of opcodes:
 -The ones that will change depending on the register.
 -The ones that will always have the same primary offset, but will change based on the Register/Opcode field.
 
-A good example of the first is the ``ADD``(0x0-0x5), different opcodes for different operand types. Operands are then defined by the ModR/M byte (0x0-0x3), or implicit in the opcode itself(0x4-0x5)
+
+A good example of the first is the ``ADD``(0x0-0x5), different opcodes for different operand types. Operands are then defined by the ModR/M byte (0x0-0x3), or implicit in the opcode itself(0x4-0x5).
+
+
+Second can be for example ``INC``, ``DEC``, ``PUSH``, or ``POP``, where the base opcode is 0xXYZ, and the opcode for it's corresponding register will be ``0xXYZ + RegisterNumber``.
+Register numbers go as follows:
+```c
+#define REG_NR_EAX 0x0
+#define REG_NR_ECX 0x1
+#define REG_NR_EDX 0x2
+#define REG_NR_EBX 0x3
+#define REG_NR_ESP 0x4
+#define REG_NR_EBP 0x5
+#define REG_NR_ESI 0x6
+#define REG_NR_EDI 0x7
+```
+
+
+
 For example the instruction 0x80, where it can be an ``ADD``, ``OR``, ADC``, ``SBB``, ``AND``, ``SUB``, ``XOR``, or ``CMP``, depending on the Register/Opcode field.
