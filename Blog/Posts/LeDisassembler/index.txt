@@ -101,3 +101,12 @@ The reg/opcode, is exactly that. Either a register, or the rest of the opcode in
 
 The r/m field can specify a register as an operand or along with the mod field, it can be an addressing mode. Sometimes, it's combination with the mod field is used to express opcode info for some instructions. Dunno.
 
+
+
+[h6][<~SIB~>]
+
+Some encodings of the ModR/M byte require the extra addressing byte SIB.
+
+For example the base-plus-index and scale-plus-index forms of 32-bit addressing require the SIB.
+
+SIB has the fields scale, index, and base.
