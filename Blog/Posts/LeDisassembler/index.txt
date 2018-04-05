@@ -217,7 +217,7 @@ union ModRMByte{
 	struct RegOpcByte_Bitfield { unsigned char RM : 3, RegOpc : 3, Mod : 2; } Byte_Bitfield;
 	//mind the retarded bitfield endianness
 };
-```
-If you don't know how a union works, you should prob go read about it, but basically it shares the same memory across the variables you put in it. 
-Good for polymorphism, i.e. if in a class you wanna have an int but in another a float you can use it to not waste space, but you can use it this way as well. I often do it for pointers so no casts, and it comes handy here as well.
+```If you don't know how a union works, you should prob go read about it, but basically it shares the same memory across the variables you put in it. 
+
+Good for polymorphism, i.e. if in a class you wanna have an int but in another a float you can use it to not waste space, but you can use it this way as well. I often do it for pointers to structures that can be different so no casts are needed (mostly the PE 64 vs 32 stuff).
 
