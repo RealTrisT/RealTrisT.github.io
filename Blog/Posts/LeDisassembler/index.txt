@@ -145,9 +145,14 @@ Opcode ``67 89 10``
 89: Opcode mov(where the 2nd operand is the default addressing mode (32 in this case))
 10: ModR/M, that if we check on the table, we can see first operand is [bx+si], and second el/ex/edx. Which it is is gonna depend on the opcode.
 
-mov [bx+si], edx  67 89 10
+Now if we check an opcode table:
+[img src="https://imgur.com/jJvrh7y.png"]
 
 
 Example 2:
 
-Opcode ``67 66 
+Opcode ``67 66 89 10``
+
+It's basically the same as the previous example, but has that 66 there.
+That changes the addressing mode, and since current is 32, it'll become 16.
+So, the 16 bit variant of edx
