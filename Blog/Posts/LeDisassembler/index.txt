@@ -80,6 +80,8 @@ Tho honestly, I'd advise reading 2.1.2, it's highly informative. But read it rea
 
 [h6][<~Opcodes~>]
 
+So the main takeaway is this:
 ```txt
 Many instructions that refer to an operand in memory have an addressing-form specifier byte (called the ModR/M byte) following the primary opcode.
 ```
+
