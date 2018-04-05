@@ -76,3 +76,10 @@ So basically we know that if second byte is 0x0F, chances are the first is a man
 
 Tho honestly, I'd advise reading 2.1.2, it's highly informative. But read it real slow, you get 1 letter or 1 comma worng and you'll be confused senseless. Or maybe it's just me.
 
+
+
+[h6][<~Opcodes~>]
+
+```txt
+Many instructions that refer to an operand in memory have an addressing-form specifier byte (called the ModR/M byte) following the primary opcode.
+```
