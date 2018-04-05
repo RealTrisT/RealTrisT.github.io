@@ -98,3 +98,6 @@ This is the 2.1.3 section, and I really don't think I can explain it any better 
 The mod and r/m fields come together to form 32 possible values (2^(power of)5 = 32), that is 8 registers, and 24 addressing modes.
 
 The reg/opcode, is exactly that. Either a register, or the rest of the opcode information. That is determined by the primary opcode itself.
+
+The r/m field can specify a register as an operand or along with the mod field, it can be an addressing mode. Sometimes, it's combination with the mod field is used to express opcode info for some instructions. Dunno.
+
