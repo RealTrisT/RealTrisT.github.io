@@ -225,3 +225,77 @@ Good for polymorphism, i.e. if in a class you wanna have an int but in another a
 
 
 So, as far as I can tell, it all just boils down seeing what the opcode asks for, and then correctly reading the ModR/M byte if one must be present to meet the necessities of the opcode, taking into account the prefixes.
+
+So, first I needed a list of opcodes and the way they work, so I went [__LINK=""][<~here~>], made a little shitty js script to get the code:
+
+```js
+const PrefixCell = 0;
+const Esc0FCell = 1;
+const OpcodeCell = 2;
+const RegOpcCell = 4;
+const NameCell = 10;
+const Operand1Cell = 11;
+const Operand2Cell = 12;
+const Operand3Cell = 13;
+const Operand4Cell = 14;
+
+var table = document.getElementById("gay"); //whatever ID you give the first table, since it doesn't have one from the get go
+var streng = "";
+var index = 0;
+for (var i = 1, row; row = table.rows[i]; i++) {
+	var flagamount = 0;
+	//to be used every loop
+
+	var celloffset = (row.cells[OpcodeCell].colSpan==2?1:0); 
+	//1 if colspan is 2    meaning it's a register-added opcode
+
+	if(row.cells[NameCell-celloffset] == null || row.cells[NameCell-celloffset].innerHTML == "<i>no mnemonic</i>" || row.cells[NameCell-celloffset].innerHTML == "<i>undefined</i>")continue;
+	//^rule out the trash
+
+	var temp = "/*" + String(index).padStart(3) + "*/    {";
+	//current opcode, and put the index in front
+
+	temp += "\"" + row.cells[NameCell-celloffset].innerHTML.replace(/\n.*/, "") + "\""; 
+	//the name of the opcode
+
+	temp += ", ";
+	if(row.cells[OpcodeCell].colSpan == 2){
+		flagamount++;
+		temp += "OPCODE_FLAG_isInterval";}
+	if(/r/.exec(row.cells[RegOpcCell].innerHTML) != null){
+		if(flagamount > 0)temp += " | ";
+		temp += "OPCODE_FLAG_RegOpc_Register";
+		flagamount++;
+	}else if(/[0-9]/.exec(row.cells[RegOpcCell].innerHTML) != null){
+		if(flagamount > 0)temp += " | ";
+		temp += "OPCODE_FLAG_RegOpc_Opcode";
+		flagamount++;
+	}
+	if(!flagamount)temp+="false";
+	//get the flags in order
+
+	if(row.cells[Operand4Cell - celloffset].innerHTML.indexOf("...") != -1) temp += ", 0, 0, 0, 0";
+	else{
+		temp +=
+		((row.cells[Operand1Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand1Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1"))) + 
+		((row.cells[Operand2Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand2Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1"))) + 
+		((row.cells[Operand3Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand3Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1"))) + 
+		((row.cells[Operand4Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand4Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1")));
+	}
+	//get the operands in order
+	
+	temp += "},";
+	//end current opcode
+
+
+	temp = temp.padEnd(140);
+	temp += "//" + ((row.cells[0].innerHTML == "") ? "" : "[" + row.cells[0].innerHTML + "] ") + ((row.cells[1].innerHTML == "") ? "" : row.cells[1].innerHTML + " ") + ((row.cells[2].innerHTML == "") ? "" : "{" + row.cells[2].innerHTML + "} ") + ((row.cells[3].innerHTML == "") ? "" : row.cells[3].innerHTML + " ") + ((row.cells[4].innerHTML == "") ? "" : "<" + row.cells[4].innerHTML + ">") + "\n";
+	//some more info always useful
+
+	index++;
+	//some more index
+
+	streng += temp; //append to motha streng
+}
+console.log(streng.replace(/(?:<b>|<_b>|<i>|<_i>|<\/i>|<b>|<\/b>)/g, "").replace(/:/g, "or"));
+```
