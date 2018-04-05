@@ -302,3 +302,9 @@ console.log(streng.replace(/(?:<b>|<_b>|<i>|<_i>|<\/i>|<b>|<\/b>)/g, "").replace
 
 
 Right now I'm only going for the non-0F-escaped ones, so the second part might come later, might not.
+
+So after I should make an array of pointers to this list, so getting an opcode is just for example ``array[opcode]->name``.
+If I was doing 0F-escaped opcodes, it'd be as simple, just ``if(*opcode == 0x0F)blabla = array_escaped[*(opcode+1)]->name``.
+
+Of course some of the entries will be zero, such as 0F itself, or 66/67. So we'll have to account for those later.
+
