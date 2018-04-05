@@ -110,3 +110,14 @@ Some encodings of the ModR/M byte require the extra addressing byte SIB.
 For example the base-plus-index and scale-plus-index forms of 32-bit addressing require the SIB.
 
 SIB has the fields scale, index, and base.
+
+
+[h6][<~Displacement/Immediate~>]
+
+```txt
+Some addressing forms include a displacement immediately following the ModR/M byte (or the SIB byte if one is
+present). If a displacement is required, it can be 1, 2, or 4 bytes.
+If an instruction specifies an immediate operand, the operand always follows any displacement bytes. An immediate
+operand can be 1, 2 or 4 bytes.
+```
+Basically displacement is address and immediate is value (I think rn, might be wrong).
