@@ -74,7 +74,7 @@ Three-byte opcodes for general-purpose and SIMD instructions are basically the s
 
 So basically we know that if second byte is 0x0F, chances are the first is a mandatory prefix.
 
-Tho honestly, I'd advise reading 2.1.2, it's highly informative. But read it real slow, you get 1 letter or 1 comma worng and you'll be confused senseless. Or maybe it's just me.
+Tho honestly, I'd advise reading 2.1.2, it's highly informative. But read it real slow, you get 1 letter or 1 comma wrong and you'll be confused senseless. Or maybe it's just me.
 
 
 
