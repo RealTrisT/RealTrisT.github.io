@@ -171,7 +171,7 @@ So since that's the only difference, and as we saw in the last image, the second
 
 
 
-[h6][<~Implementation~>]
+[h6][<~Opcode Overview~>]
 
 So, now I've gotten around to experimenting with this stuff, add I've tried starting an implementation of some of it, a few problems arose.
 
@@ -207,3 +207,8 @@ For 32 bit addressing mode it'll be according to the above table (I'll place it 
 [img src="https://imgur.com/aM222eI.png"]
 
 
+
+[h6][<~Implementation~>]
+
+
+So, since the ModRM byte is so important
