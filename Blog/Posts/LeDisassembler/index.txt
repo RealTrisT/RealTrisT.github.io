@@ -67,7 +67,7 @@ Oh boy, this is the hadpat.
 The main takeaway is this: ```txt
 A primary opcode can be 1, 2, or 3 bytes in length. An additional 3-bit opcode field is sometimes encoded in the ModR/M byte.
 ```
-Two-byte opcode formats for general-purpose and SIMD (Single instruction, multiple data) instructions consist of a 0x0F (as an escape code, not to be confused with LOCK prefix's 0xF0) and an second opcode byte, and "optionally" a mandatory prefix in the beginning of all that.
+Two-byte opcode formats for general-purpose and SIMD (Single instruction, multiple data) instructions consist of a 0x0F (an escape code as the primary opcode, not to be confused with LOCK prefix's 0xF0) and an second opcode byte, and "optionally" a mandatory prefix in the beginning of all that.
 [h2][<~"optionally" cuz it has to be there for some opcodes, and not for others~>]
 
 Three-byte opcodes for general-purpose and SIMD instructions are basically the same but instead of one additional opcode byte, it has two.
@@ -97,4 +97,4 @@ This is the 2.1.3 section, and I really don't think I can explain it any better 
 
 The mod and r/m fields come together to form 32 possible values (2^(power of)5 = 32), that is 8 registers, and 24 addressing modes.
 
-The reg/opcode, is exactly it. Either a register, or the rest of the opcode information. That is determined by the primary opcode itself.
+The reg/opcode, is exactly that. Either a register, or the rest of the opcode information. That is determined by the primary opcode itself.
