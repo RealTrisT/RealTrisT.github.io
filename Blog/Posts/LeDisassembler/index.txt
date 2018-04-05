@@ -133,3 +133,21 @@ Ok, so the main takeaway are these tables:
 [img src="https://imgur.com/8DsvAXZ.png"]
 [img src="https://imgur.com/ueZuW61.png"]
 [img src="https://imgur.com/DPOtyhM.png"]
+
+There are 3 tables, first for 16-bit addressing, second for 32, and third for SID stuff.
+
+Provided we're in 32, the first table will only come in handy when the opcode is preceeded by the Address-Size Override prefix.
+
+Example:
+Opcode ``67 89 10``
+
+67: Address-Size Override prefix
+89: Opcode mov(where the 2nd operand is the default addressing mode (32 in this case))
+10: ModR/M, that if we check on the table, we can see first operand is [bx+si], and second el/ex/edx. Which it is is gonna depend on the opcode.
+
+mov [bx+si], edx  67 89 10
+
+
+Example 2:
+
+Opcode ``67 66 
