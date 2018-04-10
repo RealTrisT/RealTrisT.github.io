@@ -1,0 +1,51 @@
+
+[__TITLE__][<~Tool: Web Walker~>]
+
+
+[h20][<~What~>]
+A tool for doing what I call web walking, you could call it maybe like id incrementation? idk
+Point is you provide a config file with the url and where to replace the id, initial id, and regexes, and it starts shitting stuff out.
+
+This isn't something I've put effort into, initially did it for piratebay.
+
+
+[h20][<~Sauce~>]
+The [__LINK="https://gist.github.com/RealTrisT/d2598728c0be0c7fc5dfb6574859c9d6#file-walker-py"][<~c0d3nz~>] is hea.
+
+
+[h20][<~Working~>]
+
+So, as a param, you provide a config file like this:
+[img src="https://imgur.com/25hGxQA.png"]
+
+Then in the script there are 3 functions you might wanna change:
+
+-``consolePrintResults``
+
+-``filePrintResults``
+
+-``handleRequestData``
+
+
+
+I think they're pretty self explanatory. If you don't you can go and read the comments on them.
+
+So ye I actually made it for dumping piratebay, so here's the result:
+
+[img src="https://imgur.com/ZI7QWk1.png"]
+[h2][<~That 529 is a ``too many requests`` error status.~>]
+
+
+The file will look like this:
+
+[img src="https://imgur.com/2fbU5O9.png"]
+
+
+It has ``b``s there for some reason, and unicode characters get converted to \xbullshit. idk why cuz I don't deal with encoding.
+I don't rly even need to for what I'm doing, in case you're thinking "this sloppy motherfucker". (I am pretty sloppy tho kappa)
+Again, you'll prob wanna change that function.
+
+So ye that's about it bye.
+
+
+
