@@ -3,7 +3,7 @@
 
 
 [h20][<~What~>]
-A tool for doing what I call web walking, you could call it maybe like id incrementation? idk
+A tool for doing what I call web walking, you could call it maybe like id incrementation? idk (I later found out it's actually "crawler")
 Point is you provide a config file with the url and where to replace the id, initial id, and regexes, and it starts shitting stuff out.
 
 This isn't something I've put effort into, initially did it for piratebay.
