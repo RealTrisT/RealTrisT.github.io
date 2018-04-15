@@ -25,7 +25,7 @@ function doit(lestr){
 	lestr = lestr.replace(colrregex, "<font color=\"$1\">$2</font>");
 	lestr = lestr.replace(boldregex, "<b>$1</b>");
 	lestr = lestr.replace(italregex, "<i>$1</i>");
-	lestr = lestr.replace(titlregex, "<center><h1><span style='font-family: \"Courier New\", Courier, monospace; color: #e0e0e0;'>Aight</span></h1><h3><i style='font-family: \"Lucida Console\", Monaco, monospace;'><font color=\"#ffaa00\">$1</font>: <font color=\"#e0e0e0\">$2</font></i></h3></center><hr><br>");
+	lestr = lestr.replace(titlregex, "<center><h1><span style='font-family: \"Courier New\", Courier, monospace; color: #e0e0e0;'>Aight</span></h1><h3><i style='font-family: \"Lucida Console\", Monaco, monospace;'><font color=\"#ffaa00\">$1</font>: <font color=\"#e0e0e0\"><div style='display: inline-block;' id='blogposttitle'>$2</div></font></i></h3></center><hr><br>");
 	lestr = lestr.replace(youtregex, "<iframe width='560' height='315' src='https://www.youtube.com/embed/$1' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>");
 	document.getElementById("lePost").innerHTML = lestr;
 }
@@ -33,6 +33,7 @@ function doit(lestr){
 function TheAjaxsStateChange(){
 	if (this.readyState == 4 && this.status == 200) {
 		doit(this.responseText);
+		document.title = document.getElementById("blogposttitle").innerHTML + " - TrisT's blog";
 	}else{
 		document.getElementById("lePost").innerHTML = "Post Not Found";
 	}

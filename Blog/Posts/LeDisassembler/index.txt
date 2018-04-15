@@ -226,26 +226,23 @@ Good for polymorphism, i.e. if in a class you wanna have an int but in another a
 
 So, as far as I can tell, it all just boils down seeing what the opcode asks for, and then correctly reading the ModR/M byte if one must be present to meet the necessities of the opcode, taking into account the prefixes.
 
-So, first I needed a list of opcodes and the way they work, so I went [__LINK="http://ref.x86asm.net/coder32.html"][<~here~>], made a little shitty js script to get the code:
+So, first I needed a list of opcodes and the way they work, so I went [__LINK="http://ref.x86asm.net/geek32.html"][<~here~>], made a little very shitty js script to get the code:
 
 ```js
-const PrefixCell = 0;
-const Esc0FCell = 1;
-const OpcodeCell = 2;
-const RegOpcCell = 4;
-const NameCell = 10;
-const Operand1Cell = 11;
-const Operand2Cell = 12;
-const Operand3Cell = 13;
-const Operand4Cell = 14;
+PrefixCell = 0;
+Esc0FCell = 1;
+OpcodeCell = 2;
+RegOpcCell = 4;
+NameCell = 11;
+Operand1Cell = 12;
+Operand2Cell = 13;
+Operand3Cell = 14;
+Operand4Cell = 15;
 
 var table = document.getElementById("gay"); //whatever ID you give the first table, since it doesn't have one from the get go
 var streng = "";
 var index = 0;
 for (var i = 1, row; row = table.rows[i]; i++) {
-	var flagamount = 0;
-	//to be used every loop
-
 	var celloffset = (row.cells[OpcodeCell].colSpan==2?1:0); 
 	//1 if colspan is 2    meaning it's a register-added opcode
 
@@ -255,32 +252,29 @@ for (var i = 1, row; row = table.rows[i]; i++) {
 	var temp = "/*" + String(index).padStart(3) + "*/    {";
 	//current opcode, and put the index in front
 
-	temp += "\"" + row.cells[NameCell-celloffset].innerHTML.replace(/\n.*/, "") + "\""; 
+	temp += "\"" + row.cells[NameCell-celloffset].innerHTML.replace(/<a.*a>/, "").replace(/^\n/, "").replace(/\n.*/, "").replace(/ /g, "") + "\""; 
 	//the name of the opcode
 
 	temp += ", ";
-	if(row.cells[OpcodeCell].colSpan == 2){
-		flagamount++;
-		temp += "OPCODE_FLAG_isInterval";}
-	if(/r/.exec(row.cells[RegOpcCell].innerHTML) != null){
-		if(flagamount > 0)temp += " | ";
-		temp += "OPCODE_FLAG_RegOpc_Register";
-		flagamount++;
-	}else if(/[0-9]/.exec(row.cells[RegOpcCell].innerHTML) != null){
-		if(flagamount > 0)temp += " | ";
-		temp += "OPCODE_FLAG_RegOpc_Opcode";
-		flagamount++;
-	}
-	if(!flagamount)temp+="false";
+	if(row.cells[RegOpcCell].innerHTML == "")temp+="fld_n";
+	else temp += "\"" + row.cells[RegOpcCell].innerHTML + "\"";
 	//get the flags in order
+
+	temp += ", ";
+	if(row.cells[RegOpcCell].innerHTML == ""){
+		temp += "OPCODE_REGOPC_NONE";
+	}else{
+		temp += (row.cells[RegOpcCell].innerHTML == "r")?"OPCODE_REGOPC_REGISTERS":"OPCODE_REGOPC_EXTENSION";
+	}
+	//get the regopc in order
 
 	if(row.cells[Operand4Cell - celloffset].innerHTML.indexOf("...") != -1) temp += ", 0, 0, 0, 0";
 	else{
 		temp +=
-		((row.cells[Operand1Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand1Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1"))) + 
-		((row.cells[Operand2Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand2Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1"))) + 
-		((row.cells[Operand3Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand3Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1"))) + 
-		((row.cells[Operand4Cell - celloffset].innerHTML == "") ? (", 0") : (", OPERAND_TYPE_" + row.cells[Operand4Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>)/g, "").replace(/(:GS|DS|FS|ES|SD|CS|SS)/, "seg_$1")));
+		((row.cells[Operand1Cell - celloffset].innerHTML == "") ? (", 0") : (", \"" + row.cells[Operand1Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>|<span.*?>)/g, "")) + "\"") +
+		((row.cells[Operand2Cell - celloffset].innerHTML == "") ? (", 0") : (", \"" + row.cells[Operand2Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>|<span.*?>)/g, "")) + "\"") +
+		((row.cells[Operand3Cell - celloffset].innerHTML == "") ? (", 0") : (", \"" + row.cells[Operand3Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>|<span.*?>)/g, "")) + "\"") +
+		((row.cells[Operand4Cell - celloffset].innerHTML == "") ? (", 0") : (", \"" + row.cells[Operand4Cell - celloffset].innerHTML.replace(/16\/32/ , "16_32").replace(/\//g, "").replace(/(?:<b>|<_b>|<i>|<_i>|<span.*?>)/g, "")) + "\"");
 	}
 	//get the operands in order
 	
@@ -289,7 +283,12 @@ for (var i = 1, row; row = table.rows[i]; i++) {
 
 
 	temp = temp.padEnd(140);
-	temp += "//" + ((row.cells[0].innerHTML == "") ? "" : "[" + row.cells[0].innerHTML + "] ") + ((row.cells[1].innerHTML == "") ? "" : row.cells[1].innerHTML + " ") + ((row.cells[2].innerHTML == "") ? "" : "{" + row.cells[2].innerHTML + "} ") + ((row.cells[3].innerHTML == "") ? "" : row.cells[3].innerHTML + " ") + ((row.cells[4].innerHTML == "") ? "" : "<" + row.cells[4].innerHTML + ">") + "\n";
+	temp += "//" + ((row.cells[0].innerHTML == "") ? "" : "[" + row.cells[0].innerHTML + "] ") + 
+		((row.cells[1].innerHTML == "") ? "" : row.cells[1].innerHTML + " ") + 
+		((row.cells[2].innerHTML == "") ? "" : "{" + row.cells[2].innerHTML + "} ") + 
+		((row.cells[3].innerHTML == "") ? "" : row.cells[3].innerHTML + " ") + 
+		((row.cells[4].innerHTML == "") ? "" : "<" + row.cells[4].innerHTML + ">") + 
+		((row.cells[5].innerHTML == "") ? "" : "«" + row.cells[5].innerHTML + "»") + "\n";
 	//some more info always useful
 
 	index++;
@@ -299,6 +298,71 @@ for (var i = 1, row; row = table.rows[i]; i++) {
 }
 console.log(streng.replace(/(?:<b>|<_b>|<i>|<_i>|<\/i>|<b>|<\/b>)/g, "").replace(/:/g, "or"));
 ```
+
+Some of the code is still from me trying to get the ``coder`` version, which you absolutely shouldn't do for it's ambiguous, get the ``geek`` one instead (the linked one).
+
+Then I also made a second script, to make a second array that would contain the fixed operands. So that you can access the first array with the information as ``OpcodePtrs[Opcode]`` where opcode is the actual opcode byte, which is much, much faster than a massive switch table.
+
+Here's the second shitty script:
+
+```js
+OpcodeCell = 2;
+NameCell = 11;
+
+var table = document.getElementById("gay"); //whatever ID you give the first table, since it doesn't have one from the get go
+var streng = "";
+
+var tableindex = 0;
+
+var index = 0;
+var nextopc = 1;
+var currentopc = 0;
+
+var wasrepeating = false;
+
+for (var i = 1, row; row = table.rows[i], table.rows[(i+1)]; i++) {
+
+	var celloffset = (row.cells[OpcodeCell].colSpan==2?1:0);
+	if(row.cells[NameCell-celloffset] == null || row.cells[NameCell-celloffset].innerHTML == "<i>no mnemonic</i>" || row.cells[NameCell-celloffset].innerHTML == "<i>undefined</i>"){
+		if(row.class == "nbb")wasrepeating = false;
+		continue;
+	}
+
+	currentopc = parseInt(((row.cells[OpcodeCell].innerHTML == "") ? row.cells[0].innerHTML : row.cells[OpcodeCell].innerHTML), 16);
+	nextopc = parseInt(((table.rows[(i+1)].cells[OpcodeCell].innerHTML == "") ? table.rows[(i+1)].cells[0].innerHTML : table.rows[(i+1)].cells[OpcodeCell].innerHTML), 16);
+
+	if(currentopc < nextopc){
+		if(wasrepeating){
+			wasrepeating = false;
+		}else{
+			if(currentopc + 1 == lastopc){
+				streng += "/*" + currentopc.toString(16) + "*/    &opcodeArray[" + tableindex + "],\n";
+				index++;
+			}else{
+				for (var l = 0; l < nextopc - currentopc; l++) {
+					streng += "/*" + (currentopc+l).toString(16) + "*/    &opcodeArray[" + tableindex + "],\n"
+					index++;
+				}
+			}
+		}
+	}else{
+		if(!wasrepeating){
+			wasrepeating = true;
+			streng += "/*" + currentopc.toString(16) + "*/    &opcodeArray[" + tableindex + "],\n";
+			index++;
+		}
+	}
+
+	tableindex++;
+	lastopc = currentopc;
+}
+console.log(streng.replace(/(?:<b>|<_b>|<i>|<_i>|<\/i>|<b>|<\/b>)/g, "").replace(/:/g, "or"));
+```
+I just copy pasted the first and changed it without paying much attention. If you're looking for my merit in these scripts you won't find it.
+
+Something to think about:
+Optimization of switch tables through the creation code pointer arrays and jumping to those. Might look into that in the futcha.
+
 
 
 Right now I'm only going for the non-0F-escaped ones, so the second part might come later, might not.
