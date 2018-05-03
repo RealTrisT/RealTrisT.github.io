@@ -30,6 +30,13 @@ Also here's a nice video I found on the matter, that puts it quite simply (it ha
 
 
 
+[h20][<~MY FUCKING IMAGE~>]
+Right so I made this image that I think explains the whole thing way better than any document or other image I've found.
+The psd file is in here.
+[img src="https://imgur.com/BFSHsew.png"]
+
+
+
 [h20][<~Preprocessing~>]
 So it consists of 3 phases (what is effectively 2 for 256, since it uses constants as the H(0)).
 [img src="https://imgur.com/AS9ntLV.png"]
