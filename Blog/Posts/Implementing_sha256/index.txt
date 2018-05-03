@@ -129,6 +129,14 @@ This is the one that does it all. Allocates memory for the padding buffer, does 
 
 
 
+[h20][<~Working~>]
+Tested with "abc" and "Lorem ipsum dolor sit amet, sem velit vitae pulvinar ut nullam mi, vitae quam, non consectetuer velit. Pellentesque nam urna volutpat risus elit ut. Orci vestibulum sem volutpat eget, blandit ultricies vestibulum, sem ligula, nibh eu lacus. Venenatis viverra id convallis pulvinar tincidunt morbi, vel sit nulla odio libero elementum vel, sed accumsan tincidunt justo et, vivamus est nec est a nunc."(Nothing fancy, it's just [__LINK="https://en.wikipedia.org/wiki/Lorem_ipsum"][<~the lorem ipsum~>].):
+[img src="https://imgur.com/wF5oLdr.png"]
+
+You can check it's right on some online website, in trist u no trust.
+
+
+
 [h20][<~How about big dicks?~>]
 
 If you're wondering "the fuck?", by big dicks, I mean big chunks of data to hash.
