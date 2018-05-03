@@ -156,7 +156,7 @@ If you're curious about how much goodshit you can hash, the delimiter is that 64
 That's representative of the size in bits.
 
 So, ``2^64 = 18446744073709551616``
-That devided by 8 (to get bytes) is ``2305843009213693952``.
+That divided by 8 (to get bytes) is ``2305843009213693952``.
 That in in turn is just ``2097152`` terabytes. 
 And if I wanted to be close-minded about it, I'd say that won't be that much of a concern for a while.
 
