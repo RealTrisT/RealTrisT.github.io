@@ -193,6 +193,24 @@ But it's not, you want people not to be able to generate an equal hash for a dif
 
 And maybe I'm just oh so completely wrong, but I think that as long as integer overflow is a thing with these algorithms, there's always gonna be a chance, that one might decide to append a few more blocks to turn the hash into what they want.
 
+So you have 8 variables. They all get summed at the end, so if you managed to get block "hashes"(just the computed value) with 7 of those zeroed out, it would be great.
+
+Basically, for each variable, provided the others were 0, you'd have 2^32 possible numbers. 2^32 * 512bits for each.
+
+``8 * 2^32 * 512/8 / 1024^4 = 2`` That is exactly 2 terabytes of hash values that could easily be put into a database.
+
+Let's imagine the 512 bits could spit out all these multi-zero-variable "digests" (which is unlikely), you'd still have to hash up to 2^512 values to get to those (provided ofc you're not a mathmatical god who can just generate them, in which case what would be the point).
+
+As of this post's writing, bitcoin network's record hashrate is 35,000,000 terahashes/s a terahash is 1,000,000,000,000 hashes. 
+That means 3.5e19 h/s.
+2^512 is ~ 1.3e154.
+
+1.3e154 / 3.5e19 = 3,7e+134
+
+That's about 1,173e+127 years for the current global bitcoin network hashrate to hash enough to potentially fill said 2TB.
+
+Eh.
+
 
 
 [h20][<~Le End~>]
