@@ -3,7 +3,8 @@
 
 
 [h20][<~Why~>]
-It's a school thing I'm supposed to do in mips assembly (ugh right?), but that I found is a fair bit more confusing than one might initially think (at least for someone like me who'll use [__ITALIAN][<~reading in general~>] as an absolute last resort), so why not make a blog post.
+It's a school thing I'm supposed to do in mips assembly (ugh right?), but that I found is a fair bit more confusing than one might initially think (at least for someone like me who'll use [__ITALIAN][<~reading in general~>] as an absolute last resort).
+It's also not every day that I implement algorithms, so why not make a post.
 
 
 
