@@ -179,6 +179,21 @@ But again, I'm doing this for a school project, so chances are slim that I'll ma
 
 
 
+[h20][<~Opinion~>]
+Right so I'm not a mathematician, and it really is not my place to be saying this but it's the internet so fuck you.
+
+Did you ever as a kid try to tie a knot without having any idea how? If so then you probably did the exact same thing I did, which was just shuffling the ropes or whatever as much as possible and just hoping it would work.
+
+This algorithm just feels exactly like that to me. It feels like they just grabbed a bunch of functions that would mess bits up and bunched them together. A bunch of times.
+
+If I had to guess, that was the reason why sha1 failed, and therefore the reason a sha-3 exists (I've not looked into that).
+
+If the sole purpose of this algorithm was to hash a message, and remove from the user the possibility to get the message back from that hash, fine.
+But it's not, you want people not to be able to generate an equal hash for a different file/string/whatever on demmand, cuz that'd break stuff.
+
+And maybe I'm just oh so completely wrong, but I think that as long as integer overflow is a thing with these algorithms, there's always gonna be a chance, that one might decide to append a few more blocks to turn the hash into what they want.
+
+
 
 [h20][<~Le End~>]
 [__LINK="https://gist.github.com/RealTrisT/f09dfb86948c7c9b0726261999d29eba#file-sha256-h"][<~CODE~>]
