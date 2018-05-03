@@ -174,7 +174,7 @@ But again, I'm doing this for a school project, so chances are slim that I'll ma
 
 
 [h20][<~Le End~>]
-
+[__LINK="https://gist.github.com/RealTrisT/f09dfb86948c7c9b0726261999d29eba#file-sha256-h"][<~CODE~>]
 So in the beginning I didn't find a lot on how sha256 works besides that document and some implementations. Because I don't like reading other people's code, all I really had was a couple of meh-quality videos and the, again, document.
 
 If anyone else's retarded the way I am, I hope this post could help. (I also hope this could help if you're not retarded, it's really not a requirement).
