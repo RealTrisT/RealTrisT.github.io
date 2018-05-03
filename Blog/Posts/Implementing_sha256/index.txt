@@ -91,6 +91,90 @@ The way it works is:
 
 Now I figure I'm just gonna implement this with bytes, since there's really no point in doing it with bits.
 Like let's be fair, you're not gonna want a 3-bit message so you can put that one last 1 bit in the end.
+Plus what's even the situation where you'd have to hash a number of bits that's not a multiple of 8!?
 
 So. MessageSize + 64 + 1 is gonna have to be our 512-aligned value (that 1 is for an extra 0x80 byte ``1000 0000``, for that 1 bit).
+
+The way I ended up doing it was I created a function to calculate the size of the whole thing when padded, and then another one to do the padding itself.
+[img src="https://imgur.com/OcUlT8k.png"]
+
+I find this a good way of doing things. Sometimes when I'm writing shitcode, I'll make functions that'll allocate memory and return a pointer to it, but that's usually bad practice since it's easier to forget that that memory was allocated in the first place, which can cause leaks if a stupid programmer doesn't go through the trouble of thinking.
+
+
+
+[h20][<~Implementing - Parsing~>]
+
+[img src="https://imgur.com/TDNqD2J.png"]
+
+
+
+[h20][<~Implementing - Schedule~>]
+
+[img src="https://imgur.com/ALMjFyc.png"]
+
+I think the comments do a pretty good job of explaining it.
+
+
+
+[h20][<~Implementing - Computing~>]
+
+I figure this part's the simplest, but I had a bit of a hickup with that first assigning of the a, b, c, etc.. variables where I thought it was always the constants.
+[img src="https://imgur.com/5F0nFOR.png"]
+
+
+
+[h20][<~Implementing - The Main Function~>]
+
+This is the one that does it all. Allocates memory for the padding buffer, does the padding, and then the hash, not really much to say.
+[img src="https://imgur.com/dFFY1WH.png"]
+
+
+
+[h20][<~How about big dicks?~>]
+
+If you're wondering "the fuck?", by big dicks, I mean big chunks of data to hash.
+
+First of all some background.
+You can hash stuff for password storage and bitcoin mining, sure. Those are, afaik, the two most prominent usages.
+
+But it's also widely used for stuff like "checksums" (quotes because I might be missusing the word, don't feel like googling rn).
+
+So if you're looking to download say an image of an OS over an insecure connection for example, you might wanna check if you didn't get mitm'd.
+Thus, you get the file hash from a secure source, and once the file is downloaded, you hash it on your side, and compare the hash to the original, if it's the same, u safe af (unless someone hacked your hashing software, in which case you're already fucked in every way possible).
+[img src="https://imgur.com/eIpMiaP.png"]
+
+Quite a few programs do this in the background. Websockets use sha1 for a really stupid reason but I guess you could consider that as well.
+
+If you're curious about how much goodshit you can hash, the delimiter is that 64-bit word in the end of the padding.
+That's representative of the size in bits.
+
+So, ``2^64 = 18446744073709551616``
+That devided by 8 (to get bytes) is ``2305843009213693952``.
+That in in turn is just ``2097152`` terabytes. 
+And if I wanted to be close-minded about it, I'd say that won't be that much of a concern for a while.
+
+
+So ye, back on topic.
+
+Basically, as my code allocates a buffer for the padded thing, the limit of what you can hash is about like half your ram?
+
+The digest is just 256 bits, so you could open a file, and provided you knew it's length, then proceed to hash it chunk by chunk, and in the last block, allocate the 512 bits and actually add the bit and the size in the end.
+
+But again, I'm doing this for a school project, so chances are slim that I'll make something as fancy as that. Not because it's hard, not because it's been done before, not because I'm perfectly happy with how it is. Just because I honestly have no use for it. If I did, this blog post would have gone differently, and if I ever do, you can expect another one.
+
+
+
+
+[h20][<~Le End~>]
+
+So in the beginning I didn't find a lot on how sha256 works besides that document and some implementations. Because I don't like reading other people's code, all I really had was a couple of meh-quality videos and the, again, document.
+
+If anyone else's retarded the way I am, I hope this post could help. (I also hope this could help if you're not retarded, it's really not a requirement).
+
+Have a nice day.
+
+
+
+
+
 
