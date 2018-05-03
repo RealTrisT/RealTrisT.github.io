@@ -103,7 +103,6 @@ I find this a good way of doing things. Sometimes when I'm writing shitcode, I'l
 
 
 [h20][<~Implementing - Parsing~>]
-
 [img src="https://imgur.com/TDNqD2J.png"]
 
 
