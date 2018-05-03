@@ -32,7 +32,7 @@ Also here's a nice video I found on the matter, that puts it quite simply (it ha
 
 [h20][<~MY FUCKING IMAGE~>]
 Right so I made this image that I think explains the whole thing way better than any document or other image I've found.
-The psd file is in here.
+The psd(photoshop) file is [__LINK="RealTrisT.github.io/Blog/Posts/Implementing_sha256/depicting.psd"][<~here~>].
 [img src="https://imgur.com/BFSHsew.png"]
 
 
