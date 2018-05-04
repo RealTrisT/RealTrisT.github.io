@@ -210,6 +210,11 @@ That means 3.5e19 h/s.
 That's about 1,173e+127 years for the current global bitcoin network hashrate to hash enough to potentially fill said 2TB.
 
 Eh.
+[__COLOR="green"][<~Ok so I went to do some reading, and this stuff I just talked about is a thing, it's called collision and is effectively what happened to md5 and sha1, PCs just got powerful enough to do this last step I described, and so it became possible to do what I suggested. 
+Yay I figured out a known "exploit" accidentally.
+Here's the vid on it:~>]
+
+[__YOUTUBE src="b4b8ktEV4Bg"]
 
 
 

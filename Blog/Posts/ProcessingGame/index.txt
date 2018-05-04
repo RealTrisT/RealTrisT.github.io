@@ -1,0 +1,83 @@
+
+[h20][<~Bro~>]
+
+So I have to make this shitty processing game for a school project.
+Oh my god is processing trash.
+
+
+
+[h20][<~But What Game?~>]
+It's called "[__LINK="https://www.mathplayground.com/mobile/mousetrap_fullscreen.htm"][<~trap the mouse~>]".
+Basically you have a bunch of hexagons, the mouse moves around, you can block hexagons to try and trapem.
+Fun to play.
+
+
+
+[h20][<~Post Structure~>]
+
+I'm pretty sure this'll just be progress as I go along, so there'll be no real structurexd.
+
+
+
+[h20][<~The Drawing Optimization Idea~>]
+
+So I had this cool idea.
+Waddif you had a different draw function for every separate part of the game?
+So say you had 1 for the initial menu, that does the squres and buttons, then another for playing, and so on.
+You could have a pointer to the function you're currently doing, and as you change scenario, you could just change the pointer.
+That would eliminate the need to run a condition every frame.
+
+But. This is processing. In java java, you have those trash like IRunnable and etc, that replace function pointers, but here no.
+
+Guess I'll have to save that idea for when I learn directx.
+
+
+[h20][<~The Drawing Of The Field~>]
+
+So it's 11 width per "11" height. 
+I say ""11"" because that's not really how hexagons work:
+[img src="https://imgur.com/XQhJmS6.png"]
+
+How I think I'm gonna draw each one is with the help of [__LINK="https://processing.org/examples/regularpolygon.html"][<~this~>] page.
+
+
+
+[h20][<~Optimizing The Drawing~>]
+
+Now if you've taken the time to read that, you'll have noticed there's a lot of calculations needed for that stuff.
+So I think I might, since they're all the same size, just make a hexagon function with hardcoded distance values.
+
+Actually no.
+
+I'll make 2 functions (hexagon only):
+
+1.
+One takes a distance and an array.
+It then proceeds to fill said array with the offsets from the center, based on that formula.
+
+2.
+The other one takes a point and the array, then it'll just do the vertex stuff with those values.
+
+
+What I'm probably gonna do as well is just not draw more than I need to.
+So instead of drawing every frame, draw once, and then redraw only where needed.
+
+
+
+[h20][<~Structure Of The Field~>]
+
+Right, so this one is a bit of a struggle.
+I'll need to do pathfinding for the mouse, so just making a 2D array with the hexagons and offsetting them will probably not be enough.
+
+A decent idea though is making an actual matrix, and only drawing where necessary.
+So then it'd kinda work like this:
+[img src="https://i.imgur.com/8J5OX6h.png?1"]
+
+But that's where memory problems come in.
+That'd essentially make for double the points.
+
+The initial would have been 11x11, now we've got 22x11, that's 242.
+Provided a float is 4 bytes, that'd be 242*8 = 1936 bytes.
+That's about 2kb, I don't think it's that bad after all, we'll see.
+
+
