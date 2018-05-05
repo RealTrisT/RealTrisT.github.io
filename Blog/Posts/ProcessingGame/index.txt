@@ -81,3 +81,116 @@ Provided a float is 4 bytes, that'd be 242*8 = 1936 bytes.
 That's about 2kb, I don't think it's that bad after all, we'll see.
 
 
+
+[h20][<~Trouble In Hexagon Town~>]
+
+So I didn't think of this before.
+[img src="https://imgur.com/IDKhSdX.png"]
+
+You're gonna have to excuse me tho, not really the hexagon boi who does hexagonez all days.
+
+But ye, that's easy to solve, just make another function to find the short diagonal.
+
+If you get trig this high quality paint sketch should be p easy to understand:
+[img src="https://imgur.com/lLSwHIB.png"]
+
+So just ``cos(30)*diameter``.
+
+Same thing for the edge: ``sin(30)*diameter``.
+
+And just like that, we got our first shit:
+[img src="https://imgur.com/DbNvlnW.png"]
+
+Now there's only one problem: Orientation.
+We want vertices pointing up, not to the side, but that's just adding 30º to the operations:
+[img src="https://imgur.com/bUjbzZt.png"]
+
+And done:
+[img src="https://imgur.com/vNrdx31.png"]
+It even looks like a dick, how tasty.
+
+By the way to clarify, I'm not actually sure processing java is gonna optimize those operations into constants, but that's not the reason why I use constants, I use them because if I'm not doing loops, I might as well.
+Tbh there's no real reason, it's just how I did it in the beginning and there's really no reason to change it now. I commented what it is, and there should be no reason to change it so I'm not gonna prettify it.
+I just said reason like 5 times and I'm ok with that.
+
+sorry
+
+
+
+[h20][<~Drawing Alloem'~>]
+
+Looperoni Pepperoni.
+
+Decided to do 2, one for the even rows and one for the odd rows.
+The rest was 2+2=4 quick maths.
+[img src="https://imgur.com/rCvMyDP.png"]
+
+
+
+[h20][<~Where Did I Click?~>]
+
+Right so now the part where, given a coordinate, you have to figure out which hex was clicked.
+[__COLOR="red"][<~Fuck~>].
+
+Right so there's a lot of ways to go about this.
+
+So I was thinking something like turning it into a bunch of squares and going from there.
+That wouldn't account for borders.
+
+I also throught of the sphere equation, that could help.
+That also wouldn't account for borders
+
+Another idea that came to my mind was to do something 3D.
+I mean this [img src="https://imgur.com/BqYwsN9.png"] looks like a cube, so it could potentially be a good idea, or it could just add 1 dimension to the same problem.
+
+
+But now I'm thinking functions.
+
+Let's start vertical since that's the hardest part.
+
+So we could mix the first idea:
+[img src="https://imgur.com/W357kvb.png"]
+
+With a function to figure out if the coordinate was in a hexagon above the line or in the one bellow.
+
+So first of all we want a function that goes like this
+[img src="https://i.imgur.com/zWfJ8o0.png?1"][h1][<~I'm so sorry lmao~>]
+
+Where the slope of those straights(?) is ``(180 - 120)/2 = 30º``.
+
+Tangent of 30 is cubic root of 3 over 3.
+
+So our equation is going to be:
+``u(x) = x*(sqrt(3)/3);`` for when it's going up, and
+``d(x) = x*(-sqrt(3)/3) + hexT;`` where hexT is the height that a triangle of the hex makes:
+
+[img src="https://imgur.com/3XwD4PU.png"]
+
+But there's a problem.
+Coordinates are retarded here, so y grows as you go down.
+That means we've gotta flip the equation.
+So it becomes:
+
+``u(x) = x*(sqrt(3)/3)-hexT;``
+and
+``d(x) = x*(-sqrt(3)/3);``
+
+
+So then it'll be the whole ``/\/\/\/\/\`` thing.
+And with this result, we can check if the coordinate we selected is in the above hexagon or not.
+
+So like ``if (y < f(x))result_y--;``.
+
+
+The horizontal was easy, just checking line, and deviding by the width of the hexagon.
+
+
+
+[h20][<~Field~>]
+
+So I've decided to go with the idea of before, and make an array with double the points to be able to "simulate" a grid.
+
+That (6, 9) shows because I was hovering the correspective cell.
+[img src="https://imgur.com/OGd8wZ0.png"]
+
+So ye that's working.
