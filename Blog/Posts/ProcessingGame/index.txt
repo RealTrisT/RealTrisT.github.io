@@ -196,8 +196,130 @@ The horizontal was easy, just checking line, and dividing by the width of the he
 [h20][<~Field~>]
 
 So I've decided to go with the idea of before, and make an array with double the points to be able to "simulate" a grid.
+*makes field class where the constructor allocates all those juicy points*
 
-That (6, 9) shows because I was hovering the correspective cell.
-[img src="https://imgur.com/OGd8wZ0.png"]
+Since now we've got a coordinate from a position. (I'm calling the field's xy "index" coordinate and the actual "pixel" position position)
 
-So ye that's working.
+We should probably get a position from a coordinate as well. Since I have a class for the field that was easy:
+[img src="https://imgur.com/0IPbZQE.png"]
+
+And result:
+[img src="https://imgur.com/TS0hXP3.gif"]
+
+
+
+[h20][<~Movement~>]
+
+Given the game there's really no need for me to be doing this, and it's code that'll more than likely get erased.
+
+But it's gotta be a fun experience to do 2d movement on hexagons. 
+I mean you can't just WASD, you can A&D, but W and S are complicated since there's 2 possible ways to go.
+
+So what I'm gonna do is, if you're holding W|S down and click A or D, it'll go to the corresponding one.
+
+Like this:
+[img src="https://imgur.com/pHl0WEz.png"]
+
+
+So what I decided to do was create a class, that will have 2 main functions:
+One to change the state of the keys (the ones needed to do the movement).
+And one to actually move, that'll check the state of the keys and do stuff accordingly.
+
+That comes in handy for when you want to predict movement, because you can just clone the coordinate class instance and plug it into the second function, out will come the predicted movement.
+This way in the future you'll be able to tell if the hexagon the player's trying to move to is blocked.
+
+[img src="https://imgur.com/pUAHg1y.png"]
+
+
+
+[h20][<~Blocking Hexagons~>]
+
+For now let's just color them differently.
+
+Right so this has to have to do with the field class.
+
+Quick note I'd just like to point out how hilarious it is that java does non-dynamic arrays without usage of pointers or ways to properly allocate/release memory.
+It's like they're trying to be the apple of programming languages, stripping shit away from the user because they think they know better, when they just really don't.
+
+Right so this is gonna be complicated.
+
+I don't think that there's a perfect way of doing this.
+
+If I draw the colored on top of the pre-existing map, I'll be wasting rendering time on stuff that's not gonna show.
+
+If I don't I'll be loosing time checking each hexagon for it's state while I draw.
+
+I think it's a matter of usage. 
+If it's like 2x2, the second should be more optimized, since 4 conditions are better than potentially rendering 4 hexagons (if they all have a different color).
+If it's like 100x100, I'll potentially be doing 10K checks and drawing once, so the second alternative is better.
+
+
+But there is also something else I can do.
+I can only render when needed.
+So render the whole map once. And then only render a couple of hexagons on top for their color.
+The issue is in the future I'll have to be careful as to what to re-render.
+Because say I render a player on top of hexagon (6, 9), and then when the player moves, rerender at hexagon (6,10).
+Then 2 players will show at both those hexagons if I don't rerender (6, 9).
+Here's how it looks:
+[img src="https://imgur.com/39hGRPE.gif"]
+
+This would allow for something like potentially event-only based rendering, not using a rendering loop at all.
+
+I'm going with this one tho. Performance ftw.
+
+
+So now there's the problem of storing the marked hexagons.
+I figure it's not worth making something dynamic for 2 reasons:
+1. The first time I trapped the rat, I activated all the hexagons before winning the game (something I don't intend on letting the user do ;)
+2. It's too cancer in java and it's not that much memory.
+
+So ye, just normal array of [__COLOR="orange"][<~booleans~>].
+
+And when that's implemented, we can do shit like this:
+[img src="https://imgur.com/w4wZ8M6.png"]
+(if you look real close, you'll notice the draw function is empty)
+
+
+Which in turn works like this:
+[img src="https://imgur.com/9vw2oaZ.gif"]
+
+
+[h6][<~Takeaway From Event-Based Rendering~>]
+
+Right, so there's always a balance to things.
+
+To loop rendering, the disadvantage is you call it every frame, and if you have a lot of elements that you have to check if you're gonna print, that should bring framerates way down, so basically loop based rendering has to have light stuff.
+
+To event based rendering there's 2 problems.
+1. If your event does too many checks, it can harm responsiveness (though that can be fixed with multithreading).
+2. You have to be really careful about what you're drawing and when, which requires quite a bit more checks than loop-based.
+
+Basically if you look at the code, you'll see that I have a few checks just to know if I can override a certain square when I hover it.
+That can become a problem in the future, if I have a lot of stuff to render.
+Because it's an independent event that can be called at any time, we're gonna have to check if there's something there that we can't override.
+
+So down the line I might do sort of a hybrid where some stuff goes into the rendering loop, and some other stuff is event-based, so that I don't have to put so many conditions in the events.
+
+That sounds a bit dirty so we'll see.
+
+
+
+[h20][<~Movement Prediction~>]
+
+Back to movement. Remember this really makes no sense since it's probably not gonna be in the final game.
+
+
+So yeah just gotta do the predict function I already implemented.
+And boom:
+[img src="https://imgur.com/fz5S7ig.png"]
+
+Purple is the player object controlled by the keyboard.
+Basically I can't move through the red squares, which are the ones in the bool array.
+
+The problem with event-based rendering is starting to show more here because now I can't hover over the player too (that'll eventually be the mouse).
+Though I what I can do is - instead of b00l34n5, I could just do a char, and then use bit flags for blocked, hovered and player.
+Then make a higher level drawSingle function in the field class, that would read those from the array, and set the hexagon color according to priority.
+Then I'd call it every time there was a modification to a hexagon.
+
+
+
