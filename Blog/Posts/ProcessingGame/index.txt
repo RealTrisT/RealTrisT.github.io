@@ -321,5 +321,12 @@ Though I what I can do is - instead of b00l34n5, I could just do a char, and the
 Then make a higher level drawSingle function in the field class, that would read those from the array, and set the hexagon color according to priority.
 Then I'd call it every time there was a modification to a hexagon.
 
+Spoiler alert I did do that and it works quite nicely.
+
+
+
+[h20][<~Movement Prediction~>]
+
+
 
 
