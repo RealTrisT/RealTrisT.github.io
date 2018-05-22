@@ -1,0 +1,61 @@
+
+[__TITLE__][<~Implementing: VESA~>]
+
+[h20][<~Why~>]
+
+Right so I'm in this quest to break windows without even booting into it.
+That requires me to make an "OS".
+I've already done some stuff such as bootloader, console and keyboard (all of these shittily).
+
+
+[h20][<~Background~>]
+
+So because CPUs always start with emulating 16-bit real mode (for compatibility with old OSes/applications), first you need to start coding in 16-bit.
+
+[h5][<~Coding what?~>]
+
+Well first, you have this thing called "boot sector". It's a space of 512 bytes, to which the first sector of the storage medium you're booting from gets loaded.
+
+So at first you have 512 bytes worth of code to do with whatever you like. In 16-bit assembly. 
+This whatever you like, is more often than not just load the rest of the so called OS.
+
+You have this thing called "interrupts", that, in 16 bit, is the way you communicate with the BIOS.
+The BIOS has some routines, that'll help you do stuff like printing to the screen, setting up video modes, load files, etc.
+
+I've already done the file loading thing, as well as switching to 32-bit protected mode.
+
+[h5][<~32-bit what the fuck mode what?~>]
+
+So you have 2 modes. Real and protected.
+
+Protected can have stuff like memory protection, and allow or certain code to access certain memory, and more stuff I don't know of yet.
+
+Real mode from what I can gather is just anyone can do whatever. The concept of "usermode" doesn't necessairly exist cuz you can access kernel memory from any process, bla bla, it's basically a meme.
+
+
+[h20][<~Waddup~>]
+
+So what I've done is, in bootsector, load the kernel into memory, then switch to 32-bit protected mode, then jump to where I loaded the kernel.
+
+It's served me well. But now there's a problem. So the topic of this post (which hasn't been addressed yet), is VESA.
+
+[h5][<~VESA~>]
+
+VESA is basically VGA on steroids.
+
+VGA is just the default display stuff, it's a buffer in memory that "represents" the screen. But it has a limited number of modes, all with "low" resolutions that are mostly 4:3, and it's kinda shit for colors as well from what I gather.
+
+So VESA basically can give you a list of modes your GPU supports, and that's gucci.
+
+[h5][<~Back On Topic~>]
+
+So I was doing all 16-bit stuff in bootsector, switching to pm32 (32-bit protected mode) and jumping to kernel.
+
+But my bootsector (which again is limited to 512 bytes), already looks like this:
+
+[img src="https://imgur.com/KZEsy8Z.png"]
+
+Now I could remove these strings, I'd have a bit more space, but 1. it would still prob not be enough, and 2. it would still not be good for expansion, in case I wanted to implement sometheing else where I needed BIOS.
+
+
+[h20][<~~>]

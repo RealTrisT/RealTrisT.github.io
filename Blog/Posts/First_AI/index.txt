@@ -1,0 +1,128 @@
+
+[__TITLE__][<~AI.NN: First Experience With Neural Networks And Polymorphism~>]
+
+[h20][<~Why~>]
+
+Cuz I was bored. [h2][<~(And it's something I've been really wanting to do for some time)~>]
+
+
+
+[h20][<~What~>]
+
+So I wanted to start with AI. Neural networks in specific, and that's what I did.
+
+
+
+[h20][<~The Events as They Unfolded~>]
+
+Right so I wanted to make an AI to play the google dinossaur game.
+But.
+First of all the language I'm determined to use is c++, and displaying stuff can be troublesome, 
+but I non-brainically said fuck it and kept going.
+Mainly because I've done a game in the console in windows, so worst case scenario I could do something like that again.
+
+(spoiler alert this isn't gonna play the google dinossaur game)
+
+But then there was another slight problem.
+I actually didn't know jack shit about AI.
+I'd seen a shitload of videos on it, and read a fair bit, but in what came to implementing, I actually had no idea how it worked.
+That should prove something.
+
+So I went reading.
+But that is complicated when you don't know what you're looking for right?
+So I went for something simpler, something someone would write about when trying to teach noobos like me.
+"neural network xor"
+
+
+
+[h20][<~Diving Into Some Actual Usefulness~>]
+
+After finding this beautiful thing ([__LINK="https://becominghuman.ai/neural-network-xor-application-and-fundamentals-6b1d539941ed"][<~here~>]):
+[img src="https://imgur.com/JCilyhc.png"]
+I actually got stuck for a while cuz I'm a dickhead and didn't go read the whole article.
+
+I thought, that the connections didn't mean shit (they were just there to say "from neuron x to neuron y").
+And I also thought that all neurons did was multiplication.
+Needless to say that wasn't how it worked.
+
+I began, after 30m of trying to figure out how the diagram worked on my own, reading the article.
+
+There are various types of neurons. Linear neurons, Sigmoid neurons, Binary threshold neurons, etc..
+You can read up on it [__LINK="https://www.slideshare.net/ChristopherSharkey2/neural-networks-types-of-neurons"][<~here~>].
+
+If you read the article from the diagram you'll know the ones there, are Binary Threshold ones.
+
+How it works is basically: 
+``if(neuronInput >= neuronThreshold)neuronOutput = 1; else neuronOutput = 0;``
+
+The connections between neurons also have a weight, so when something travels from a neuron to another, it will be multiplied by that connection's weight.
+
+
+
+[h20][<~In a Nutshell~>]
+
+If we go back to the diagram, first neuron from the second column, we can see it has two connections going into it, and that they both have a weight of 1.
+On the other hand the connections to the bellow neuron both have -1 as the weight.
+
+Let's follow the second neuron in the second layer (row).
+
+-First you multiply the value of the two input neurons by -1.
+-Then you add them together
+-Compare it to -1.5, if it's less, the output of the neuron is 0, otherwise it's 1.
+
+Simple as that. At least for Binary Threshold ones.
+
+
+
+[h20][<~Implementation~>]
+
+So I'm not too used to object-oriented stuff.
+In fact all I knew about object-oriented c++ when I started, I'd learned in my reverse engineering shenanigans.
+
+Honestly it wasn't too hard since I'd seen some object-oriented source code before from source engine's console stuff.
+
+It took me a while though, to think about how I was gonna do that exactly.
+
+
+What I ended up doing was a base class "Neuron", that just had a virtual "CalculateOutput" function and input/output value variables.
+[img src="https://imgur.com/jRHrfUi.png"]
+
+I then made another derived class, and the additions were stuff to deal with the input values, and the calculation of those based on connections from past layers.
+[img src="https://imgur.com/77KMktX.png"]
+I'm probably gonna change this from automatic allocation, to like a function that'll do it if the user finds it necessary, but will leave the pointer empty otherwise.
+
+Then the specific neuron type classes were fairly easy:
+[img src="https://imgur.com/vz9yOo2.png"]
+
+
+
+[h20][<~Usage~>]
+
+Then I just created the necessary "structures" to represent the diagram:
+[img src="https://imgur.com/jXRvuyL.png"]
+
+And ran the shit.
+[img src="https://imgur.com/aPKEMNs.png"]
+
+
+
+[h20][<~Shitcode Disclaimer~>]
+
+If it's not obvious enough, I don't actually think this code is the peak of my existence, I did it so I could get the AI working, and I will be trying to make something decent-er out of it as I go along. 
+(Not that it's decent, it's of negative decenticity, but it can become more decent until it's neutral and possibly even fairly decent.)
+
+Anyhow [__LINK="https://gist.github.com/RealTrisT/b4fa5a860ae7b19e6849fdb6d46c529a"][<~here's the code~>].
+
+
+
+[h20][<~Result~>]
+
+This.
+[img src="https://imgur.com/EjLIrPI.png"]
+I actually tested with printing floating point before, and the result was 1.00000/0.00000 either way.
+
+
+
+[h20][<~Bai~>]
+
+Bai.
