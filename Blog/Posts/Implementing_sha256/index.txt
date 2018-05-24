@@ -177,6 +177,8 @@ The digest is just 256 bits, so you could open a file, and provided you knew it'
 
 But again, I'm doing this for a school project, so chances are slim that I'll make something as fancy as that. Not because it's hard, not because it's been done before, not because I'm perfectly happy with how it is. Just because I honestly have no use for it. If I did, this blog post would have gone differently, and if I ever do, you can expect another one.
 
+[__COLOR="green"][<~After thinking for a bit, I figured one could just have an internal state (the digest buffer), and keep pumping data to hash into a function and further that state, whatever was left of the 512 bytes (or if the buffer didn't reach 512 bytes), would be put into a temporary internal buffer, than an "end" function would pad and hash when called, this way, you could abstract the functionality from files entirely, and even, if in a c++ implementation, overload the shift operators for the class and use it as a stream, then do:
+``h_sha256 << buffer << buffersize;``.~>]
 
 
 [h20][<~Opinion~>]
