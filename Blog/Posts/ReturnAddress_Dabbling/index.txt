@@ -61,7 +61,94 @@ Right so now the whole hacking past that. Ughhh.. I'm fucking bored rn you have 
 Bad habits that ruin your dopamine reward system are the worst habits, cuz then you have way less fun doing everything else.
 Don't worry, I'm working on it.
 
-Right so that was a bit messier
+Right so that was a bit messier, but I learned a few new things (or I should say "to do a few new things").
+
+Right so what I did was:
+-Find a codecave in the target binary.
+-Make a proxy function that saved the return pointer and then changed the one in the stack to point to said codecave in the binary.
+-Make a trampoline out of that codecave, that would jump to a second "proxy return", that would jump to the previously saved return address.
+
+But I didn't do it right away, started off with just calling the function straight from the dll:
+[img src="https://imgur.com/shC5Lcz.png"]
+
+And of course:
+
+[img src="https://imgur.com/6G1IS1n.png"]
+
+I mean what do you think I am? Not a complete god of the binary?
+
+Shitty personality asside, it wasn't as easy as you might initially think.
+I didn't instantly come to the conclusion that what I should do is what's described in the list above.
+
+You kinda need to shove some asm inthere, jump back and forth, and it gets messy.
+[img src="https://imgur.com/l70CBvD.png"] <- that's messi
+Anyhow what I ended up doing was grab myself a PE, out of that the .text section, finding a codecave, cool.
+But then the rest? Boi'o'boi.
+
+So I needed a place to call that would call the function "from it's module", and that would have been easy, just do some inline asm. It actually is what I did initially.
+But theeeeeen, you need a place to jump back to, and after that, keep running your own code.
+
+Honestly once I started it kinda all just came to me. The asm source was probably the most difficult thing to do because I'd never done it before in MASM or visual studio, and it was a bit of a pain.
+I've explained it, and you might find it complicated, so if you're still confused, I made a lot of dandy comments in the code.
+
+[img src="https://imgur.com/7ygrQMN.png"]
+
+Now today I learned that ``extern "C"`` actually does stuff both ways.
+It basically prevents symbol mangling, which would mess shit up for the linker when linking it with the assembly.
+That way when the linker finds a missing reference, it can go look in the other obj files for a "calle" instead of a "??!@£call!"$/)!"$%/". If it's not clear, I am clearly exaggerating, but I think you get my point.
+
+[img src="https://imgur.com/LUmSOXP.png"]
+
+And I think to fully understand the wizardry (there's a dry in this word, can you imagine if it was pronounced "wizar-dry"? So fucking weird.) you will need the asm.
+
+[img src="https://imgur.com/XYFYBcQ.png"]
+
+Honestly tho can you believe that no motherfucking ide or text editor ever has an ASM hilight? 
+Sublime text doesn't and vs doesn't. Makes me mad but makes me also feel like I am doing shit other scrubs aren't. :thinking:
+
+So yeah masm is pretty cancerous compared to nasm. I love my nasm.
+Can you imagine someone always having coded in masm, then going over to nasm and thinking it's cancer?
+I could see that happening, people code java and then go over to C and say it's cancer so I guess that makes anything possible.
+
+And as eckspekted:
+[img src="https://imgur.com/S1p4nuj.png"]
+Boom.
+
+You know, I spent quite a while on the whole masm and linking thing, you wouldn't believe how little resources or documentation there is on that.
+
+Anyhow for anyone wanting to attempt this:
+[__LINK="https://stackoverflow.com/questions/33751509/external-assembly-file-in-visual-studio"][<~Here~>]'s how to use asm sources.
+And [__LINK="https://stackoverflow.com/a/25770921/5352316"][<~here~>]'s a good answer for the ___ error you're gonna get tryinna compile it (for me adding /safeseh was enough). 
 
 
 [h20][<~Where did you come from cotton eye Joe~>]
+
+Right so it's all fun and games but if we're being real, how useful can this really be?
+Let's just assume that this is a way to bypass some form of anticheat.
+First of all you're already using virtualprotect, which is loud as fuck, and you're using it directly on the memory region the binary is mapped to.
+On top of that you are changing memory, so provided they don't hook virtualprotect, you still probably would be fucked by integrity checks if there were any.
+And I'm just talking usermode ACs.
+
+So I can't see this being the most useful thing on earth right, 
+but I can see it being a decent alternative, because provided you're not running multiple threads on your "cheat" or whatever, 
+you could change that function pointer, cast it, and call as many functions as you want from the same "spot" in the binary of the target binary. 
+Hell, you change codecavejump and you can simulate calls from every single module. Just have an array, "oh now I wanna call from user32.dll".
+Besides, if a function properly checks where it's being called from (unlike I did), say with some compiler shenanigans, it's gonna be a bit of code, 
+a lot of stack changes, and it would still probably be simpler to do this than to get around that.
+
+Talk about compiler shenanigans, for the executable, it probably is a better idea to use the intrinsics (``_ReturnAddress()`` for vs, there's an equivalent for gcc), since you won't literally have a function that takes a pointer to tell it where it's being called from. 
+I didn't know it existed at the time, but still, you could likely just inline the one with all the stuff, and if I had to guess the result shouldn't be too different.
+
+
+[h20][<~Sleep tight~>]
+
+Cuz I will too.
+
+
+
+
+
+
+
+
+
