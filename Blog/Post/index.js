@@ -35,7 +35,7 @@ function TheAjaxsStateChange(){
 		doit(this.responseText);
 		document.title = document.getElementById("blogposttitle").innerHTML + " - TrisT's blog";
 	}else{
-		document.getElementById("lePost").innerHTML = "Post Not Found";
+		document.getElementById("lePost").innerHTML = "Post Not Found: " + this.status;
 	}
 }
 

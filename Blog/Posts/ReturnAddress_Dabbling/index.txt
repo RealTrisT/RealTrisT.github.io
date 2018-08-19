@@ -1,0 +1,67 @@
+[__TITLE__][<~Dabbling: Return Pointers~>]
+
+[h20][<~Why~>]
+
+Cuz even though I had better stuff to do, I woke up in the morining with this in my anus of a head, so I had to do it.
+
+
+[h20][<~What~>]
+
+So basically, I woke up this morning, hyped to work on a sick new project I'd just embarked in.
+Instead, for some reason, I started thinking about something I'd suggested (inside a bigger suggestion) someone to do in order to solve a problem they had.
+
+And that was verify whether a call was being made from a place you wanted a call made from.
+It also had came across my mind a few other times when playing gta 5, cuz I remembered that people were being banned left and right at some point due to hacks calling natives.
+
+Now if you don't know what natives are, they're high level functions on the game's binary, that do shit like "playanimation" and etc. Real high level.
+Ofc those are juicy shits, and they were fairly easy to find as well so most cheats relied on them.
+But anything that had anything to do with money would get people banned.
+
+Now ofc this was server side, but considering the possibility that it wasn't, the client code checking that the functions were being called from within it's module could be a thing.
+
+So I decided to do both that (the checking), and then a way of defeating it.
+
+
+[h20][<~Where did you come from~>]
+
+Right so if we're checking where the thing is coming from, we need 2 things, the return pointer, and all of that juicy module information.
+
+The way we get the return pointer is we, in the main function, make a parameter for the return pointer, and then make a naked proxy function that will pass it.
+
+Then there's many ways we can check which module it came from. That disgusting EnumModulesWhatever API, the HelpToolWhatever32 API, which although not really that disgusting, it's still kinda lame to use when you are inside the project. OOOOOOORRRRRRR. We could find out how GetModuleHandle gets it's shit and do it manually.
+
+Now you don't have to worry, I've done it already some time ago, didn't think it was really worth writing a whole post about it, but what you're gonna wanna search for is TEB and PEB. Basically fs (gs in 64 bit) holds a thing that points to the GDT, and the GDT has it pointing to the TEB, which every one of those has a pointer to the PEB, which in turn, again, points to an LDR_DATA structure with module info, including 3 linked lists with the loaded modules by load, memory, and initialization order.
+
+FS or GS are segment registers, you may not have heard of em cuz it's old 16-bit shit nobody really uses besides the CPU, and in turn OS (has to do with [__LINK="https://en.wikipedia.org/wiki/X86_memory_segmentation"][<~memory segmentation~>] in case you wanna go reading).
+GDT is the [__LINK="https://en.wikipedia.org/wiki/Global_Descriptor_Table"][<~"Global Descriptor Table"~>], used for segmentation, also mostly a 16-bit thing, but as you can see has it's purpose in 32 and 64 bit x86.
+TEB is the [__LINK="https://en.wikipedia.org/wiki/Win32_Thread_Information_Block"][<~"Thread Environment Block"~>] or "Thread Information Block" as for some reason those wiki guys decided to call it, pretty self explanatory, if you don't think so the link is there.
+PEB is the [__LINK="https://en.wikipedia.org/wiki/Process_Environment_Block"][<~"Process Environment Block"~>], again, self explanatory, if not, link.
+
+This stuff isn't exactly openly documented as the other apis, though windbg has the structures all filled out if I'm not mistaken, and if it doesn't, you have the internet.
+
+So yeah, here's the code:
+
+[img src="https://imgur.com/kzVTczN.png"]
+As you can see, you have printcaller, with the correct parameters, and then _printCaller, with one for the return address, that I decided to call "caller", even though that might be a bit deceiving because it really does point to the instruction after the call.
+
+Here's the result of running that:
+[img src="https://imgur.com/9c5rcSJ.png"]
+
+420+69 is in fact 489 (what a memer right?), so everything is a-ok
+
+In case you want to do the module stuff yourself, I should say good luck and fuck you, but Imma provide code anyway so you can understand I'm a big boi with something to prove.
+[img src="https://imgur.com/UrHKFLh.png"]
+
+There actually are 3 LIST_ENTRYs in that structure, but it's like layers, if you do load order, it will point to the beginning of the load order LIST_ENTRY on the next/prev struct, if you do memory order it will point to the beginning of the memory order LIST_ENTRY, and same thing for initialization order, that's the reason I cut out the load order one from the struct, cuz I didn't wanna do maths along the way to keep pointers aligned. Fucking stupid shit billy - jesus.
+
+
+[h20][<~Where did you go~>]
+
+Right so now the whole hacking past that. Ughhh.. I'm fucking bored rn you have no idea. 
+Bad habits that ruin your dopamine reward system are the worst habits, cuz then you have way less fun doing everything else.
+Don't worry, I'm working on it.
+
+Right so that was a bit messier
+
+
+[h20][<~Where did you come from cotton eye Joe~>]
