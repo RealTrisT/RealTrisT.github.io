@@ -91,13 +91,11 @@ But theeeeeen, you need a place to jump back to, and after that, keep running yo
 Honestly once I started it kinda all just came to me. The asm source was probably the most difficult thing to do because I'd never done it before in MASM or visual studio, and it was a bit of a pain.
 I've explained it, and you might find it complicated, so if you're still confused, I made a lot of dandy comments in the code.
 
-[img src="https://imgur.com/7ygrQMN.png"]
+[img src="https://imgur.com/LUmSOXP.png"]
 
 Now today I learned that ``extern "C"`` actually does stuff both ways.
 It basically prevents symbol mangling, which would mess shit up for the linker when linking it with the assembly.
 That way when the linker finds a missing reference, it can go look in the other obj files for a "calle" instead of a "??!@£call!"$/)!"$%/". If it's not clear, I am clearly exaggerating, but I think you get my point.
-
-[img src="https://imgur.com/LUmSOXP.png"]
 
 And I think to fully understand the wizardry (there's a dry in this word, can you imagine if it was pronounced "wizar-dry"? So fucking weird.) you will need the asm.
 
