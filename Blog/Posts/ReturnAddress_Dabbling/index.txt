@@ -116,7 +116,7 @@ You know, I spent quite a while on the whole masm and linking thing, you wouldn'
 
 Anyhow for anyone wanting to attempt this:
 [__LINK="https://stackoverflow.com/questions/33751509/external-assembly-file-in-visual-studio"][<~Here~>]'s how to use asm sources.
-And [__LINK="https://stackoverflow.com/a/25770921/5352316"][<~here~>]'s a good answer for the ___ error you're gonna get tryinna compile it (for me adding /safeseh was enough). 
+And [__LINK="https://stackoverflow.com/a/25770921/5352316"][<~here~>]'s a good answer for the ``error LNK2026: module unsafe for SAFESEH image.`` error you're gonna get tryinna compile it (for me adding /safeseh was enough). 
 
 
 [h20][<~Where did you come from cotton eye Joe~>]
