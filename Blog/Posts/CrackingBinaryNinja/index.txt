@@ -1,0 +1,100 @@
+[h20][<~What~>]
+
+Binary Ninja is an RE tool I find very nice, managed to get my hands on a linux "purchase" build, so Imma crack it cuz I don't have $150-600 for a license.
+If I ever do have that for a license, I will buy it to support the devs, as should everyone else. (Or just donate if theres a way since I'll already have a functioning copy.)
+
+
+
+[h20][<~They Have Mugs~>]
+
+They have mugs and baseball hats.
+[img src="https://imgur.com/qGLjIHt.png"]
+That's just broken.
+
+
+
+[h20][<~Dat~>]
+
+They don't put much effort into preventing people from cracking it, since "they know their main clientele are people with the exact skillset they'd be trying to fight" - mambda.
+
+Rite so let's get into it.
+
+First thing that happens when you execute:
+[img src="https://imgur.com/GAeREZ9.png"]
+
+Searching for "License Re" yields the following results:
+[img src="https://imgur.com/u5Ajn48.png"]
+
+Which if we xref leads us to this:
+[img src="https://imgur.com/IoDrw7a.png"]
+
+To which the first xref is:
+[img src="https://imgur.com/72WlksS.png"]
+
+If we patch that jnz gives us:
+[img src="https://imgur.com/bFRzOdP.png"]
+
+But if we load a x64 binary, we still get:
+[img src="https://imgur.com/Gt5OQC5.png"]
+
+So I got spoiled.
+Told that whatever was doing that was before.
+
+So Imma look into _BNIsLicenseValidated, and with some luck, there'll be a pointer to a global "license" class.
+Class which, if I am correct gets some values set before IsLicenseValidated is called, but also before the "support stuff" is loaded.
+
+BNIsLicenseValidated is really an import, which is a bit of a pain in the ass, since IDA doesn't seem to wanna tell me where it comes from and guess work isn't something I really wanna do. 
+[img src="https://imgur.com/iyNNkh8.png"]
+
+Because I noticed the function I was actually reversing was main, I decided to go that route.
+
+So scrolling through, first thing it does is this:
+[img src="https://imgur.com/accHOq6.png"]
+
+A few different elements are used through the beginning of main.
+-The BinaryNinja class.
+-The BinaryNinjaApplication class.
+-The BN functions (imports).
+-The MainWindow class.
+
+We've seen the BN functions deal with license verification, so let's look into that first.
+
+The functions are called throughout the binary in this order:
+-150: BNInitUI
+-323: BNIsUpdateInstallationPending
+-325: BNInstallPendingUpdate
+-327: BNFreeString (pointer returned by InstallPendingUpdate)
+-458: BNGetLisencePath
+-464: BNFreeString (returned by GetLicensePath)
+-579: BNIsLicenseValidated
+-596: BNSaveLastRun
+
+It's a bit weird the way this whole thing works. That or the decompiler is acting up, because there's a massive while loop, where the first thing is that message above, and like only halfway through is GetLisencePath called.
+
+So let's go back to digging into BNIsLicenseValidated.
+
+I was told there is a "BinaryNinjaCore.dll" on windows. There seems to be a "libbinaryninjacore.so.1" here, and after taking a peak at exports, we can find this:
+[img src="https://imgur.com/Btt8iif.png"]
+
+noice.
+
+I was expecting BNIsLicenseValidated to be just a get function to some member of a struct. I was right (somewhat, not a struct).
+
+[img src="https://imgur.com/3Frw9tL.png"]
+
+And the xrefs:
+
+[img src="https://imgur.com/7TV59uM.png"]
+
+so good.
+
+Right. So one is a compare, and the other is a mov. By default it's zero, so what we want is the mov.
+
+In the function of the mov, there are a few calls like this:
+[img src="https://imgur.com/PUg0tfg.png"]
+
+then theres "created", "type", "count", "data", "signature", and "expires epoch".
+
+So that might have something to do with parsing the license file, it also might not.
+
+I would believe it if it was some kind of "license format", but it seems like too much.

@@ -1,0 +1,227 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+		<title>Xaos - TrisT</title>
+		<style>
+		/*------------------------ body --------------------*/
+			body{
+				margin: 0px;
+				background-color: #36393e;
+			}
+
+
+		/*----------------------- navbar -------------------*/
+			.navbarul {
+				font-family: "Courier New", Courier, monospace;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				background-color: #2f3136;
+			}
+
+			.navbarli {
+				float: left;
+			}
+
+			.navbarli a {
+				display: block;
+				color: white;
+				text-align: center;
+				padding: 14px 16px;
+				text-decoration: none;
+			}
+
+			.navbarli a:hover:not(.navbaractive) {
+				background-color: #111;
+			}
+
+			.navbaractive {
+				background-color: #a742f4;
+			}
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+
+			.ProjName{
+				position: relative;
+				text-align: center;
+			}
+
+			.ProjName .Back{
+				max-width: 100%;
+			}
+
+			.ProjName .Name{
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 600%;
+			}
+
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+			.ProjDescription{
+				width: 66%;
+				font-family: "Lucida Console", Monaco, monospace;
+				color: white;
+				text-align: justify;
+			}
+
+			.ProjDecription p{
+				padding-bottom: 5px;
+			}
+
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+			.Postings{
+				width: 100%;
+				margin: auto;
+			}
+			.Postings .blog{
+				border: 2px solid #141516;
+				border-radius: 3px;
+				padding: 10px 10px 10px 10px;
+				/*background-color: #2f3136;*/
+
+				width: 50%;
+				float: left;
+				text-align: center;
+			}
+			.Postings .docs{
+				padding: 10px 10px 10px 10px;
+				border: 2px solid #141516;
+				border-radius: 3px;
+				text-align: center;
+			}
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+			.BlogPostEntry{
+				font-family: "Courier New", Courier, monospace;
+				border: 2px solid #141516;
+				background-color: #2f3136;
+				border-radius: 3px;
+				padding: 10px;
+				margin: 10px 0;
+				text-align: left;
+			}
+
+			.BlogPostEntryLink{
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.BlogPostEntry::after {
+				content: "";
+				clear: both;
+				display: table;
+			}
+
+			.BlogPostEntry img{
+				float: left;
+				max-width: 60px;
+				width: 100%;
+				margin-right: 20px;
+				border-radius: 10%;
+			}
+
+			.BlogPostEntryTimestamp{
+				float: right;
+				color: #aaa;
+			}
+
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------*/
+
+			.DocGrid{
+				display: grid;
+				grid-template-columns: repeat(auto-fit, 326px);
+				grid-column-gap: 30px;
+				grid-row-gap: 5px;
+			}
+
+			.DocEntry{
+				font-family: "Courier New", Courier, monospace;
+				border: 3px solid #141516;
+				background-color: #2f3136;
+				border-radius: 5%;
+				padding: 10px 10px 5px 10px;
+				margin: 10px 0;
+				text-align: center;
+			}
+
+			.DocEntryLink{
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.DocEntry::after {
+				content: "";
+				clear: both;
+			}
+
+			.DocEntry img{
+				max-width: 300px;
+				min-width: 300px;
+				/*width: 100%;*/
+				border-radius: 10%;
+			}
+		</style>
+	</head>
+	<body>
+		<ul class="navbarul">
+			<li class="navbarli"><a href="../../">Home</a></li>
+			<li class="navbarli"><a href="../../Blog">Blog</a></li>
+			<li class="navbarli"><a class="navbaractive" href="../../Projects">Projects</a></li> 
+			<li class="navbarli"><a href="../../About">About</a></li>
+			<li class="navbarli" style="float:right;"><div style="display: block; text-align: center; color: white; padding: 14px 16px;">Monospace Font Master Race</div></li>
+		</ul>
+
+		<div id="XaosName" class="ProjName">
+			<div class="Back"><img width="100%" src="https://i.imgur.com/rbwILPO.jpg"></div>
+			<div class="Name" color="">Xaos</div>
+		</div>
+		<hr>
+		<div class="ProjDescription">
+			<p>Xaos is a modular overlay. It has base modules for basic functionality such as ui.</p>
+			<p>It's name was insipired by greek mythology.</p>
+			<p>The first thing in greek mythology was chaos (or khaos), which originated from the separation of heaven and earth. Xaos is just how it's pronounced in some languages.</p>
+			<p>The point of this overlay is to enable anyone to write a module or a script, making use of exported functions from other modules, and progressively making such an easier process.</p>
+			<p>As an example, at some point I aim to be able to code a simple antivirus using things such as a kernel module as well as a ui module, and maybe even do it in just javascript! (for fun that is, of course the final version would be compiled).</p>
+		</div>
+		<hr>
+		<section class="Postings">
+			<div class="blog">
+				<div class="BlogList">
+				<!-- //////////////////BLOG////////////////// -->
+						<a class="BlogPostEntryLink" href="Post?w=ReturnAddress_Dabbling"> 
+							<div class="BlogPostEntry">
+								<img src="https://i.imgur.com/qyMIjU9.png?2" title="Dean Henry Fogg - The Magicians">
+								<p><font color="#d17327">[POC]Dabbling</font>: Return Pointers </p>
+								<span class="BlogPostEntryTimestamp">19/08/2018</span>
+							</div>
+						</a>
+				<!-- //////////////////\LOG////////////////// -->
+				</div>
+			</div>
+			<div class="docs">
+				<div class="DocGrid">
+				<!-- //////////////////DOCS////////////////// -->
+						<a class="DocEntryLink" href="../Project/Xaos">
+							<div class="DocEntry">
+								<font color="#d17327">XAOS</font><br><br>
+								<img src="https://imgur.com/ksPdQCF.png" title="Samurai Band Logo - Cyberpunk 2077">
+							</div>
+						</a>
+				<!-- /////////////////\DOCS////////////////// -->
+				</div>
+			</div>
+		</section>
+		<br><br><br><br><br><br><br><br><br><br>
+	</body>
+</html>
