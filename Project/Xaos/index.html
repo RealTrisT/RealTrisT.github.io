@@ -3,6 +3,10 @@
 	<head>
 		<title>Xaos - TrisT</title>
 		<style>
+			* {
+				box-sizing: border-box;
+			}
+
 		/*------------------------ body --------------------*/
 			body{
 				margin: 0px;
@@ -58,13 +62,15 @@
 				left: 50%;
 				transform: translate(-50%, -50%);
 				font-size: 600%;
+				color: black;
 			}
 
 /*-------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------*/
 			.ProjDescription{
-				width: 66%;
+				padding: 0 20px 0 20px;
+				width: 100%;
 				font-family: "Lucida Console", Monaco, monospace;
 				color: white;
 				text-align: justify;
@@ -77,25 +83,48 @@
 /*-------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------*/
+			
 			.Postings{
-				width: 100%;
-				margin: auto;
+				padding: 10px;
+				height: 800px;
 			}
-			.Postings .blog{
-				border: 2px solid #141516;
-				border-radius: 3px;
-				padding: 10px 10px 10px 10px;
-				/*background-color: #2f3136;*/
 
-				width: 50%;
+			.Postings .blog{
+				box-sizing: border-box;
 				float: left;
+				width: 50%;
+				height: 100%;
+
 				text-align: center;
+				padding: 7px 20px 0 20px;
+				border: solid black;
+				border-width: 2px 1px 2px 2px;
+				overflow-y: auto;
 			}
 			.Postings .docs{
-				padding: 10px 10px 10px 10px;
-				border: 2px solid #141516;
-				border-radius: 3px;
+				box-sizing: border-box;
+				float: left;
+				width: 50%;
+				height: 100%;
+
 				text-align: center;
+				padding: 7px 20px 0 20px;
+				border: solid black;
+				border-width: 2px 2px 2px 1px;
+				overflow-y: auto;
+			}
+
+			.Postings .rowType{
+				font-size: 48px;
+				width: 100%;
+				font-family: "Lucida Console", Monaco, monospace;
+				color: #230000;
+			}
+
+			.Postings:after{
+				content: "";
+				display: table;
+				clear: both;
 			}
 /*-------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------*/
@@ -197,6 +226,8 @@
 		<hr>
 		<section class="Postings">
 			<div class="blog">
+					<span class="rowType">Blog</span>
+					<hr>
 				<div class="BlogList">
 				<!-- //////////////////BLOG////////////////// -->
 						<a class="BlogPostEntryLink" href="Post?w=ReturnAddress_Dabbling"> 
@@ -210,6 +241,8 @@
 				</div>
 			</div>
 			<div class="docs">
+					<span class="rowType">Docs</span>
+					<hr>
 				<div class="DocGrid">
 				<!-- //////////////////DOCS////////////////// -->
 						<a class="DocEntryLink" href="../Project/Xaos">
@@ -222,6 +255,6 @@
 				</div>
 			</div>
 		</section>
-		<br><br><br><br><br><br><br><br><br><br>
+		
 	</body>
 </html>
