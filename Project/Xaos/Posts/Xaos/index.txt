@@ -1,1 +1,10 @@
-nthn
+[__TITLE__][<~XAOS: Xaos Module~>]
+
+
+[h20][<~Eh~>]
+01/09/2018
+
+So I'm now starting work on it, even though I already started like 3 more modules.
+I wasn't doing anything with this except loading Coeus and getting a js console running from it's exports.
+Now I'm rearanging shit.
+
