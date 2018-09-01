@@ -2,9 +2,46 @@
 
 
 [h20][<~Eh~>]
-01/09/2018
+01/09/2018 - 07:00 PM
 
 So I'm now starting work on it, even though I already started like 3 more modules.
 I wasn't doing anything with this except loading Coeus and getting a js console running from it's exports.
 Now I'm rearanging shit.
 
+I made it so it manages the module stuff. Again, that was all Coeus, but now I'm doing it where I should have done it in the first place.
+
+Also I actually did it decently this time.
+
+In the beginning of this, everything spun around the js engine, so coeus was kinda doing everything. It was really cancer.
+There was stuff happening such as module initialization functions returning js references to strings to be printed when they got done loading.
+
+Now I've decided have 2 main structs.
+One to be implemented in each module, with a module load message, description, and pointers to init and term functions;
+The other to contain loaded module information(internal).
+
+And for now, 2 exported functions to load and unload modules:
+-The load func returns the first of the 2 structs corresponding to the loaded module, and has an optional output for the module address. It does the linked list stuff and properly allocs and adds the module to xaos's list.
+-The unload func is basically just the opposite.
+
+Here code:
+[img src="https://imgur.com/Pk8Q0x6.png"][__LINK="https://github.com/RealTrisT/Xaos/blob/master/Xaos/Xaos.h"][<~xaos.h~>]
+
+[img src="https://imgur.com/0241dFm.png"][__LINK="https://github.com/RealTrisT/Xaos/blob/master/Xaos/Xaos.cpp"][<~xaos.cpp~>]
+
+I will say, the fact that you can reference objects that are declared after the struct's declaration is pretty sick. 
+You can see in the free function how I use it.
+
+Because of AllocNew there I thought maybe it would be a good idea to just introduce something to c++ like a "constructor allocation function" and a "destructor free function", feels like something that could come in handy for stuff like this.
+
+Also the linked list is not your typical circular doubly linked list, since the last element doesn't point to the first.
+Think it fits here since I'll always know what the first element is, and I'll most likely always start traversing through the first element.
+
+
+[h20][<~Eh~>]
+01/09/2018 - 07:45 PM
+
+Right I've decided that shit was messy.
+
+So if I'm gonna code a module, I don't wanna have some nasty Xaos_ModEntry I'm never gonna use cluttering my shit.
+So I made that into ModuleManaging.h, and only Xaos.cpp uses that.
+So now you can just grab Xaos.lib and Xaos.h and go to town on your module without any undeeded shit.
