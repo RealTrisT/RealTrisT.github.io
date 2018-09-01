@@ -1,0 +1,103 @@
+/*------------------------ body --------------------*/
+body{
+    margin: 0px;
+    background-color: #36393e;
+  }
+
+
+/*----------------------- navbar -------------------*/
+  .navbarul {
+      font-family: "Courier New", Courier, monospace;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #2f3136;
+  }
+
+  .navbarli {
+      float: left;
+  }
+
+  .navbarli a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+  }
+
+  .navbarli a:hover:not(.navbaractive) {
+      background-color: #111;
+  }
+
+  .navbaractive {
+      background-color: #a742f4;
+  }
+
+
+/*---------------------- content -------------------*/
+  #main_text{
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 20px;
+    color: #e0e0e0;
+  }
+
+  #lePost{
+    font-family: "Courier New", Courier, monospace;
+    color: #ccbfb5;
+  }
+
+  #lePost a:link {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:visited {
+      color: #ad77d6;
+      text-decoration: none;
+  }
+
+  #lePost a:hover {
+      color: #9741d8;
+      text-decoration: none;
+  }
+
+  #lePost a:active {
+      color: red;
+  }
+
+
+  .code{
+    display: inline-flex;
+    background: #2f3136;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    text-indent: 0;
+    color: #839496;
+    padding: .5em;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    vertical-align: baseline;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    user-select: text;
+    -webkit-box-direction: normal;
+    text-rendering: optimizeLegibility;
+    border: 2px solid #111214;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 25px;
+  }
+
+  .smallcode{
+    background: #161719;    
+    color: #d1cdbe;
+    border: 1px solid #141413;
+    border-radius: 5px;
+    font-family: Menlo,Consolas,Monaco,monospace;
+    padding: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 1px;
+  }
+}
