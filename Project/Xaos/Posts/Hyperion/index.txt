@@ -1,0 +1,77 @@
+[__TITLE__][<~XAOS: Hyperion Module~>]
+
+
+[h20][<~Eh~>]
+04/09/2018 - 14:41 PM
+
+Right so I've began work on this a bit ago, on a weekend I was away with no internet.
+
+Basically this is display stuff. For dx I just grabbed some code from an emulator project I was doing and adapted it.
+
+For now I just made the window a fixed size of 1920x1080.
+The original code from the emulator was for the most part mambda's.
+I've now come to the realization that this code is mostly trash for what I'm attempting.
+
+The DX code basically just creates a D3D11_PRIMITIVE_TOPOLOGY_POINTLIST "canvas", which means every vertex represents a pixel.
+Now that was completely fine for the emulator. But now there's a major fucking problem.
+The emulator was 160x144 pixels. Which totals to 23040. It might seem like a large number, but the cpu can handle copying a few buffers here and there.
+1920x1080 on the other hand, totals to ------- 2073600. Compare. So yeah, the whole copying buffers thing isn't really working, because every time you render,
+you have to copy over 2073600 pixels (one at a time mind you) and translate them from R8G8B8A8 to R32G32B32A32_FLOAT, which gets even worse because the struct you gotta copy it to is PIXLE_VERTEX, which also has position information there, which sure slows things down.
+Funny thing I was actually thinking of starting testing with 5760x1080. That would have been fun. 
+
+To test it I made it so a gradient was shifted across the screen, 1 pixel at a time. That totals to 1920 total frames.
+Here da coed:
+[img src="https://imgur.com/lLVuvUO.png"]
+(I could have used a constructor, but that HypScreen is a hyperion export, and I'm using LoadLib + GetProcAddr, so I couldn't be bothered to go get the mangled symbol for the constructor of the dllexport class).
+
+Result looks like this:
+[img src="https://i.imgur.com/IIuqSGx.png?0"]
+It took 8 seconds to shift from right to left.
+
+So yeah basically it renders 1920 frames over ~8 seconds.
+1920/8 = 240.
+
+Now that may sound good, but it really is not, and for one simple reason.
+Old games can run on my PC at 400+ fps.
+This isn't gpu 240 fps, this is cpu 240 fps.
+So if this were to scale perfectly, spanned across my 3 screens it would be 80fps, and poor guy with 3 4k screens would prob go down to 10-.
+
+So today I've found that the (I call it) canvas approach doesn't really scale, and if I wanna do big boi UI, Imma need to start drawing myself some triangles.
+
+
+[h20][<~Eh~>]
+04/09/2018 - 15:12 PM
+
+Right so I really didn't talk much about the rest of hyperion's cogs and gears (not that it matters too much, it'll most likely all get reworked soon).
+I have 1 export for "updating the screen", that basically copies the stuff from hyperion's R8G8B8A8 "API buffer" into the one used for rendering, and then it draws it and presents it:
+[img src="https://imgur.com/guR9NOJ.png"]
+
+HyperionScreen is an array of Hyperion_RGBA representing the pixel values:
+[img src="https://imgur.com/XKAO4ky.png"]
+[img src="https://imgur.com/I9Nv3Yz.png"]
+
+f4colorTranslatable is a derived class from f4color (originally from my emulator's graphics header) that takes a Hyperion_RGBA in it's constructor. 
+Since no member variables are added you can then use it as a regular f4color.
+I did this because I don't want any Hyperion_RGBA stuff in my gfx code, and f4color is part of my gfx code.
+[img src="https://imgur.com/DlhdzsK.png"]
+
+screen is an array of PIXEL_VERTEX;
+[img src="https://imgur.com/Ib8rbGL.png"]
+(I think now you should get the  get the f4colorTranslatable thing)
+And HyperionUD is just an instance of my manager class for all things window + directx.
+
+Might also want to know how I made a transparent window like that, simple (even though it took me an hour to figure it out): 
+[img src="https://imgur.com/BC90tq1.png"]for the window stuff
+and
+[img src="https://imgur.com/kNCOJn7.png"]for the afterwindow stuff (gets called after the previous code and before the message loop)
+
+So yeah, I showed all this just cuz, this actually has to be redone as a whole.
+I have to do it with triangles, triangles everywhere (yes, toystory), and I dunno honestly.
+
+There's gonna have to be a lot of thinking behind this, because then I'll have to on top of it do like button clicks and just input shit..
+
+And the worst part is, individual pixels just offer so much more flexibility than triangles.
+Sure I'd have to implement like brasenham's algo, probably some other shit for like curves, but at least it would be my shit yknow.
+With fucking triangles, about the only useful thing I can do is like textures?
+I would really like, for individual windows to have the possibility to have an alpha value, and then be able to chose if they stay on top of other windows and blend with them, or if everything bellow them is ignored and they alpha blend directly with the desktop, which would be sick. 
+With triangles that's seeming less and less likely, more and more difficult.

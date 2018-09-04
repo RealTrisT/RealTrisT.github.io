@@ -45,3 +45,19 @@ Right I've decided that shit was messy.
 So if I'm gonna code a module, I don't wanna have some nasty Xaos_ModEntry I'm never gonna use cluttering my shit.
 So I made that into ModuleManaging.h, and only Xaos.cpp uses that.
 So now you can just grab Xaos.lib and Xaos.h and go to town on your module without any undeeded shit.
+
+
+[h20][<~Eh~>]
+04/09/2018 - 14:33 PM
+
+I've been playing around with it for a bit now, I went to a place with no internet for the weekend.
+Basically not much is changed, I made a [__LINK="https://github.com/RealTrisT/Xaos/blob/master/Xaos/ModuleManaging.h"][<~ModuleManaging.h~>] and a [__LINK="https://github.com/RealTrisT/Xaos/blob/master/Xaos/ModuleManaging.cpp"][<~ModuleManaging.cpp~>], that hold all the module stuff. 
+Xaos.cpp is now just main and a few exported proxy functions that call the ones in ModuleManaging. 
+I don't know if that's the right thing to do, something about proxy functions feels iffy to me, but it does seem to be cleaner than what I was doing so.
+
+Also I just remembered that, even though I showed Xaos_ModuleInfo, and it should be pretty self-explanatory, I didn't show an example of it in use, which if someone was making a blog post about their shit, I'd like to see.
+So here 'tis:
+[img src="https://imgur.com/xjcAaJY.png"]
+
+I've also made a function to shut all the modules down for exit, and slightly reworked the UnloadModule one with an overload.
+[img src="https://imgur.com/AZ7KVTf.png"]
