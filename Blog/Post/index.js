@@ -13,6 +13,7 @@ var youtregex = /\[__YOUTUBE src=(?:\"|&quot;)(.+?)(?:\"|&quot;)\]/g;
 function escapeHtml(text) {return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");}
 
 function doit(lestr){
+	//lestr = fix_everything(lestr); -> is this what future sounds like?
 	//-------------------------------------------ajax request
 	lestr = escapeHtml(lestr);
 	lestr = lestr.replace(/(?:\r\n|\n)/g, '<br />');
@@ -50,3 +51,106 @@ function TheAjaxsStateChange(){
 		xhttp.send();
 	}
 })();
+
+
+//RIGHT. 
+// so the rules for the blog post format are:
+// [  ══╗
+//      v
+// 		[NAME 							-> name of the tag
+//		[NAME="PROPERTY"				-> property of the tag
+//		[NAME="PROPERTY1""PROPERTY2"]	-> can have more than 1 property, separated by different sets of quotation marks
+//		[NAME]content~>]				-> content must be terminated by "~>]"
+//
+//skipping:
+//	skipping an opening of square brackets can be done by encasing it in an NOTAG
+//	tag, it's usage is simple, ignored text will begin at the end of the tag, and
+//	it has a single parameter that is the ending sequence for the tag (in case we 
+//	want to write say "~>]" inside it) so for writing the post, I'll do: 
+//"usage is [NOTAG="eñd"] [NOTAG="end_sequence"] text here end_sequence eñd"
+//	and the webpage will display only: 
+//"usage is [NOTAG="end_sequence"] text here end_sequence"
+//	KEEP IN MIND, the code tag does not ignore, so place this inside of code
+
+
+ELVAR = {
+	"LINK": function(params, content) {
+		return "<a href=\"" + params[0] + "\">" + content + "</a>";
+	},
+	"KODE": function(params, content){
+		return 
+			"<code class=\"smallcode\">" + content + "</code>";
+	},
+	"CODE": function(params, content) {
+		return "<div class=\"codecontainer\"><pre class=\"code l_" + params[0] + "\"><code>" + content + "</code></pre></div>";
+	},
+	"NOTAG": function(params, content) {
+		return content;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+	"LINK": function(params, content) {
+		return 
+		;
+	},
+};
+
+FNCTION_STACK = [];
+
+DEFAULT_TERMINATOR = "~>]";
+CURRENT_TERMINATOR = DEFAULT_TERMINATOR;
+
+
+
+//so I can find multiple things in the search state:
+//	-An opening of a tag (which will not be that if what's between the closing square brackets isn't a tag,
+//		or if there's no closing brackets at all)
+//	-An end sequence
+
+//tho if there is an end sequence and a left square bracket, should prolly check which is first
+
+function nigga(text){
+	current_index = 0;
+	while(true){
+		let found_osb = text.indexOf("[", current_index); 								//opening square bracket
+		let found_ccs = text.indexOf(CURRENT_TERMINATOR, current_index);				//closing character sequence
+
+		if(found_ccs == -1 && found_osb == -1){											//if we have neither
+			return text.length;															//just return the end index, because we're at the end
+		}else if((found_ccs != -1 && found_osb < found_ccs) || found_ccs == -1){		//if (assumed) tag is first
+			let next_right_bracket = text.indexOf("]", found_osb+1);					//look for next closing bracket
+			if(next_right_bracket == -1){												//if there's no bracket
+				if(found_ccs == -1){return text;}										//and we have no closing sequence, then we are at the end of the road
+				else return found_ccs + CURRENT_TERMINATOR.length;
+			}
+		}else if((found_osb != -1 && found_ccs < found_osb) || found_osb == -1){		//if terminator is closer
+			return found_ccs + CURRENT_TERMINATOR.length;								//we found the end
+		}
+	}
+}
+
+
+
+
