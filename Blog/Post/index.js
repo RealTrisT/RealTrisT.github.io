@@ -131,23 +131,64 @@ CURRENT_TERMINATOR = DEFAULT_TERMINATOR;
 
 //tho if there is an end sequence and a left square bracket, should prolly check which is first
 
+
+
+//this function must return [original_size, modified_string]
 function nigga(text){
+	original_size = text.length;
+	original_size_offset = 0;
 	current_index = 0;
 	while(true){
-		let found_osb = text.indexOf("[", current_index); 								//opening square bracket
-		let found_ccs = text.indexOf(CURRENT_TERMINATOR, current_index);				//closing character sequence
+		let found_osb = text.indexOf("[", current_index); 									//opening square bracket
+		let found_ccs = text.indexOf(CURRENT_TERMINATOR, current_index);					//closing character sequence
 
-		if(found_ccs == -1 && found_osb == -1){											//if we have neither
-			return text.length;															//just return the end index, because we're at the end
-		}else if((found_ccs != -1 && found_osb < found_ccs) || found_ccs == -1){		//if (assumed) tag is first
-			let next_right_bracket = text.indexOf("]", found_osb+1);					//look for next closing bracket
-			if(next_right_bracket == -1){												//if there's no bracket
-				if(found_ccs == -1){return text;}										//and we have no closing sequence, then we are at the end of the road
-				else return found_ccs + CURRENT_TERMINATOR.length;
+		if(!(found_ccs == -1 && found_osb == -1)){											//if we have neither
+			
+			if((found_ccs != -1 && found_osb < found_ccs) || found_ccs == -1){				//if (assumed) tag is first
+
+				let next_right_bracket = text.indexOf("]", found_osb+1);					//look for next closing bracket
+				if(next_right_bracket == -1){												//if there's no bracket
+					if(found_ccs != -1)text = text.substring(0, found_ccs);					//and we have closing sequence, then we do exactly the same as if it were a terminator. 
+				}else{																		//if we did find a closing bracket
+					let next_equal_sign = text.indexOf("=", found_osb+1);					//get the equal, in case there's properties
+					let tag_ending = 0;														//declare the ending of the tag name
+					if(next_equal_sign == -1 || next_right_bracket < next_equal_sign)		//if there's no sign or the closing square bracket is before the equal (which would mean it does not belong to the tag)
+						 tag_ending = next_right_bracket;									//set the ending of the tag name to the index of the square bracket
+					else tag_ending = next_equal_sign;										//otherwise, the tag name starts at the equal
+					let tag_function = ELVAR[text.substring(found_osb, tag_ending)];		//now we get the function from the tag name
+					if(tag_function != null){												//if it is in fact a tag
+						let recruse_val = nigga(text.substring(next_right_bracket+1));		//recurse
+						let replace_val = tag_function((next_equal_sign == -1)				//if there are no parameters
+									?[]														//empty list
+									:process_params(text.substring(							//otherwise, pass the parameters
+										next_equal_sign+1, 									//from the equal sign
+										next_right_bracket									//to the right bracket
+									)), 													//and also pass the
+								recruse_val[1]												//text, xd
+						);
+						text = 																//text becomes
+							text.substring(0, found_osb) 									//what was before
+							+ replace_val 													//with the result
+							+ text.substring(												//and from the terminator of the result, which is:
+								next_right_bracket+1										//the closing square bracket from the tag
+								+ recruse_val[0] 											//plus the original size of the found tag
+								+ CURRENT_TERMINATOR.length									//plus the length of the terminator
+							)
+						;
+
+						
+					}else {current_index = next_right_bracket+1; continue;}					//if it's not a tag, keep going
+				}
+
+			}else if((found_osb != -1 && found_ccs < found_osb) || found_osb == -1){		//if terminator is closer
+				
+				text = text.substring(0, found_ccs);										//we found the end, so trim the text to where the terminator starts
+			
 			}
-		}else if((found_osb != -1 && found_ccs < found_osb) || found_osb == -1){		//if terminator is closer
-			return found_ccs + CURRENT_TERMINATOR.length;								//we found the end
+
 		}
+
+		return [original_size + original_size_offset, text];
 	}
 }
 
