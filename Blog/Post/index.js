@@ -13,7 +13,7 @@ var youtregex = /\[__YOUTUBE src=(?:\"|&quot;)(.+?)(?:\"|&quot;)\]/g;
 function escapeHtml(text) {return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");}
 
 function doit(lestr){
-	//lestr = nigga(lestr)[1];
+	//lestr = nigga(lestr, DEFAULT_TERMINATOR, true)[1];
 	//-------------------------------------------ajax request
 	lestr = escapeHtml(lestr);
 	lestr = lestr.replace(/(?:\r\n|\n)/g, '<br />');
@@ -80,46 +80,83 @@ function init_functions(){
 	DEFAULT_TERMINATOR = "~>]";
 	CURRENT_TERMINATOR = DEFAULT_TERMINATOR;
 
-	ELVAR = {
-		"LINK": function(params, content) {
-			return "<a href=\"" + params[0] + "\">" + content + "</a>";
+	//PRELIMINARY:	[CUSTOM TERMINATOR OR NULL, WHETHER TO LOOK FOR SUBTAGS WITHIN THIS TAG]
+	//CONTENT:		REPLACED STRING
+
+	ELVAR = {			//index 0 is the perliminary function, index 1 is the one to be called once the content is obtained as well
+		"LNK": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return "<a href=\"" + params[0] + "\">" + content + "</a>";}
 		},
-		"KODE": function(params, content){
-			return "<code class=\"smallcode\">" + content + "</code>";
+		"KODE": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content){return "<code class=\"smallcode\">" + content + "</code>";}
 		},
-		"CODE": function(params, content) {
-			return "<div class=\"codecontainer\"><pre class=\"code l_" + params[0] + "\"><code>" + content + "</code></pre></div>";
+		"CODE": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return "<div class=\"codecontainer\"><pre class=\"code l_" + params[0] + "\"><code>" + content + "</code></pre></div>";}
 		},
-		"NOTAG": function(params, content) {
-			return content;
+		"NOTAG": {
+			"terminator": null,
+			"allow_subtags": false,
+			"has_content": true,
+			"prelim": function(params) {this.terminator = params[0];},
+			"func": function(params, content) {terminator = null; return content;}
 		},
-		"COLOR": function(params, content) {
-			return "<font color=\"" + params[0] + "\">" + content + "</font>";
+		"COLOR": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return "<font color=\"" + params[0] + "\">" + content + "</font>";}
 		},
-		"LINK": function(params, content) {
-			return 
-			;
+		"YT": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": false,
+			"func": function(params, content) {return "<iframe width='560' height='315' src='https://www.youtube.com/embed/" + params[0] + "' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>";}
 		},
-		"LINK": function(params, content) {
-			return 
-			;
+		"IMG": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return;}
 		},
-		"LINK": function(params, content) {
-			return 
-			;
+		"S": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return;}
 		},
-		"LINK": function(params, content) {
-			return 
-			;
+		"BOLD": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return;}
 		},
-		"LINK": function(params, content) {
-			return 
-			;
+		"TITLE": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return;}
 		},
-		"LINK": function(params, content) {
-			return 
-			;
+		"ITALIAN": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return;}
 		},
+		"CENTER": {
+			"terminator": null,
+			"allow_subtags": true,
+			"has_content": true,
+			"func": function(params, content) {return;}
+		}
 	};
 }
 
@@ -152,17 +189,18 @@ function process_params(text){
 }
 
 //this function must return [original_size, modified_string]
-function nigga(text){
+function nigga(text, terminator, look_for_subtags){
 	var original_size_offset = 0;
 	var current_index = 0;
 	while(true){
 		let found_osb = text.indexOf("[", current_index); 									//opening square bracket
-		let found_ccs = text.indexOf(CURRENT_TERMINATOR, current_index);					//closing character sequence
+		let found_ccs = text.indexOf(terminator, current_index);							//closing character sequence
+
+
 
 		if(!(found_ccs == -1 && found_osb == -1)){											//if we have neither
 			
 			if((found_osb != -1 && found_osb < found_ccs) || found_ccs == -1){				//if (assumed) tag is first
-
 
 				let next_right_bracket = text.indexOf("]", found_osb+1);					//look for next closing bracket
 				if(next_right_bracket == -1){												//if there's no bracket
@@ -173,25 +211,41 @@ function nigga(text){
 					if(next_equal_sign == -1 || next_right_bracket < next_equal_sign)		//if there's no sign or the closing square bracket is before the equal (which would mean it does not belong to the tag)
 						 tag_ending = next_right_bracket;									//set the ending of the tag name to the index of the square bracket
 					else tag_ending = next_equal_sign;										//otherwise, the tag name starts at the equal
-					let tag_function = ELVAR[text.substring(found_osb+1, tag_ending)];		//now we get the function from the tag name
-					if(tag_function != null){												//if it is in fact a tag
-						let recruse_val = nigga(text.substring(next_right_bracket+1));		//recurse
-						let replace_val = tag_function((next_equal_sign == -1)				//if there are no parameters
-									?[]														//empty list
-									:process_params(text.substring(							//otherwise, pass the parameters
-										next_equal_sign+1, 									//from the equal sign
-										next_right_bracket									//to the right bracket
-									)), 													//and also pass the
-								recruse_val[1]												//text, xd
-						);
-						//console.log("replace_val: ", replace_val);
+					let tag_data = ELVAR[text.substring(found_osb+1, tag_ending)];			//now we get the function from the tag name
+
+					if(look_for_subtags && tag_data != null){				//IF WE FOUND A TAG
+
+						let params = (next_equal_sign == -1)								//get the params in case there are any, if not
+										?[]													//empty list
+										:process_params(text.substring(						//otherwise, pass the parameters
+											next_equal_sign+1, 								//from the equal sign
+											next_right_bracket								//to the right bracket
+						)		)		;
+
+						if(tag_data.prelim != undefined){tag_data.prelim(params);}
+						
+						let tag_terminator = (tag_data.terminator == null)
+							? DEFAULT_TERMINATOR 
+							: tag_data.terminator
+						;
+						
+						let recruse_val = [0, ""];
+
+						if(tag_data.has_content)											//IF THAT TAG HAS A TERMINATOR
+							recruse_val = nigga(											//recurse
+								text.substring(next_right_bracket+1), 						//the rest of the string
+								tag_terminator,												//the terminator (custom if provided)
+								tag_data.allow_subtags										//whether or not to look for tags within
+							);
+						let replace_val = tag_data.func(params, recruse_val[1]);			//call the swap function
+
 						text = 																//text becomes
 							text.substring(0, found_osb) 									//what was before
 							+ replace_val 													//with the result
 							+ text.substring(												//and from the terminator of the result, which is:
 								next_right_bracket+1										//the closing square bracket from the tag
 								+ recruse_val[0] 											//plus the original size of the found tag
-								+ CURRENT_TERMINATOR.length									//plus the length of the terminator
+								+ ((tag_data.has_content)?tag_terminator.length:0)			//plus the length of the terminator
 							)
 						;
 						current_index = 													//push index forward by the amount we have found
@@ -202,19 +256,19 @@ function nigga(text){
 							replace_val.length - (											//the length we got from fixing the string
 								next_right_bracket+1 - found_osb 							//minus the size of the tag
 								+ recruse_val[0] 											//minus the initial size of the tag's contents
-								+ CURRENT_TERMINATOR.length									//minus the terminator's size
+								+ ((tag_data.has_content)?tag_terminator.length:0)			//minus the terminator's size
 							)
 						;
-
 						continue;															//and keep going for there might be more tags
-						
-
-					}else {current_index = next_right_bracket+1; continue;}					//if it's not a tag, keep going
+					}else{
+						current_index = next_right_bracket+1;
+						continue;
+					}
 				}
 
 			}else if((found_ccs != -1 && found_ccs < found_osb) || found_osb == -1){		//if terminator is closer
 				text = text.substring(0, found_ccs);										//we found the end, so trim the text to where the terminator starts
-				current_index += found_ccs;													//and set the current index to the end there, for what happens next
+				current_index = found_ccs;													//and set the current index to the end there, for what happens next
 			
 			}
 
