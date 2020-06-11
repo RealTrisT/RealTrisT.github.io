@@ -1,4 +1,8 @@
-[__TITLE__][<~Graphics: Everything Matrices~>]
+
+
+
+
+[__TITLE__][<~Graphics: Rasterization and Everything Matrices~>]
 
 
 [h20][<~Wat?~>]
@@ -14,6 +18,8 @@ shit that's out there.
 
 So I'll start off with a brief breakdown of rasterization.
 
+
+
 [h20][<~Rasterization?~>]
 
 I'm sure you've heard about ray tracing. This is exactly not that.
@@ -23,10 +29,12 @@ This is raytracing:
 
 And it produces some really beautiful shit like this:
 [img src="../Posts/Everything_Matrices/raytracing_beautiful.jpg"]
+
+
 [h5][<~But that's not it~>]
 
-Raytacing tries to simulate light bounces, refractions, reflections, etc.. That's why 
-you get such realistic and beautiful renders with it.
+Raytacing (sorta) tries to simulate light bounces, refractions, reflections, etc.. That's 
+why you get such realistic and beautiful renders with it.
 But like with all good things, there are enough problems associated with that. 
 Most of it stems from the fact that you can't simulate every photon, but also from 
 other generally unfeisable things. For instance it's nearly impossible to have a rainbow 
@@ -40,12 +48,15 @@ Our problem is that it's slow.
 It won't run on your PC, it won't run on your phone, it won't run. It'll only crawl.
 Very, very slowly.
 But good news, once upon a time someone found a different solution that's also fairly
-decent at displaying a 3D environment. And one that one is computationally efficient.
+decent at displaying a 3D environment. And one that is computationally efficient.
+
 
 [h5][<~Rasterization.~>]
 [img src="../Posts/Everything_Matrices/rasterization.jpg"]
 I started the rasterization section with explaining raytracing because I find it's the
-most intuitive approach, as it simulates the real world. But this one is simple as well.
+most intuitive approach, as it simulates the real world. I suppose to show that not all
+ideas are complicated algorithms designed from the get-go just so computers can do it.
+Rasterization is, but it's fairly simple as well.
 
 Consider the triangle above.
 It's 2D. It has 3 vertices. You can easily determine whether any point in space is inside
@@ -59,7 +70,278 @@ triangle.
 People have developed a lot of very smart techniques to build this up into the beautiful
 works of art called videogames you see today:
 [img src="../Posts/Everything_Matrices/crysis_gameplay_wppr.jpg"]
-You might think this looks just as good as raytacing, and god fucking damn it this shit
-looks so fucking good. But if after this post you still feel like going down this rabbit
-hole, you'll find they just found very smart ways to avoid things that would look bad with
-rasterization.
+You might think this looks just as good as raytacing, and god fucking damn it this looks 
+so good. But if after this post you still feel like going down this rabbit hole, you'll 
+find they just found very smart ways to avoid things that would look bad with rasterization.
+
+
+So yeah. Rasterization is just grabbing all these triangles, and punching their souls into the 
+screen. In the form of pixels. This isn't particularly hard if you think only 2D, but once you
+start trying to get 3D things to go on your screen (like that beautiful crysis screenshot),
+things start to get a little more complicated.
+
+
+
+[h20][<~Linear algebra yesn't?~>]
+
+Well yes, but actually no.
+
+Look, this is gonna have some math on it.
+I'm complete shit at math though, so I figure that if I can get it, anyone can.
+
+
+[h6][<~What we have~>]
+
+We have triangles. To be more precise, we have vertices that will at some point 
+make up those triangles. We do not care about the concept of a triangle, because 
+that's the job of the rasterizer.
+
+We have a graphics card (GPU aka Graphics Processing Unit), and graphics cards,
+unlike your processor (CPU) have a [__BOLD][<~lot~>] of cores. This is in order to be able
+to preform tasks in parallel.
+
+[h2][<~So while your CPU is great at doing few hard tasks, your GPU is great at 
+doing a whole fuckload of easy tasks. A graphics card can be seen as a whole smaller 
+computer. It has advantages in these operations over the CPU because for instance it 
+has it's "RAM" (called VRAM) closer by than the CPU has it's (actual) RAM. A graphics 
+card would ofc be no good at doing things like parsing the html in this post. The 
+html is just a big string that you have to process sequentially, and the CPU's fast 
+cores are much better equipped for dealing with something like that. As many cores as 
+the GPU may have, it could never deal with that situation well because this process 
+can't be broken up into smaller parts, and one core of the GPU is generally much weaker. 
+The opposite ends up happening for the CPU in the opposite scenario. All there is to it 
+is that we have dedicated hardware, and this takes a lot of the workload off the CPU, 
+and gives it to the GPU, which was designed specifically to deal with it.~>]
+
+You'll see later we'll have to perform operations on every single vertex, and for this
+the parallel power the GPU has comes in handy.
+
+
+[h6][<~What we want~>]
+
+What we need to do is grab these vertices, and present them to the rasterizer in 
+a way it can understand what needs to be seen. Now, the development of graphics,
+like any other industry, developed it's own standards, and has generally headed
+in the direction that allows the most flexibility with the most performance and
+functionality.
+
+So the way any rasterizer (that actually matters) works is it takes the X and Y 
+coordinates from the (-1, -1) to (1, 1) range, maps that to your ``viewport``'s resolution.
+The ``viewport`` is just what you're rendering to. It can be your whole screen if
+you're running a fullscreen application, a window if not, maybe even your VR headset.
+
+So what we want is to get our supposed-to-be-on-screen 3D points, and get their
+X and Y coordinate to be in the -1 to 1 range. Note: the same goes for the Z
+coordinate, which is going to end up representing the depth (it'll come in handy
+before we're done putting the pixels on the screen).
+
+
+[h6][<~How we achieve it~>]
+
+With simple math!
+You know how pretty much everything in math derives from a sum? The subtraction
+operation is inherent to the sum, but the multiplication comes from the sum.
+After the multiplication people found out that should have an opposite as well
+and so they made up division. It just went up from there to the clusterfuck we
+today get to call math.
+
+All this will be exclusively making use of multiplication. Matrix multiplication,
+granted, but that's still just sums and multiplications.
+
+
+
+[h20][<~Matrix?~>]
+[img src="../Posts/Everything_Matrices/matrix.jpg"]
+
+You can see matrices as arrays.
+A 4 by 4 (4x4) matrix is just the same as a multidimensional (2-dimensional) array
+with 4 columns and 4 rows. Something like this:
+```
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+```
+Unfortunately though, whoever came up with the mathematical notation was a complete
+retard, and the first number actually dictates the number of rows.
+This means that a 1x4 matrix is actually:
+```
+0 0 0 0
+```instead of
+```
+0
+0
+0
+0
+```Whatever, it's not overly important.
+Also keep in mind that a matrix that has the same number of columns as it has rows
+is called a [__BOLD][<~square~>] matrix.
+
+
+[h6][<~Transpose~>]
+[img src="../Posts/Everything_Matrices/matrix_pills.jpg"]
+
+The transpose of the matrix is just the matrix flipped over it's diagonal.
+
+Example 1:
+```
+1 1 1
+```transpose:
+```
+1
+1
+1
+```
+Example 2:
+```
+1 2 3
+4 5 6
+7 8 9
+```transpose:
+```
+1 4 7
+2 5 8
+3 6 9
+```
+This is slightly important, because if you're in the process of getting 
+into graphics and you really do want to understand matrices, you might 
+see elsewhere values changing in different places of the matrices.
+
+Just keep in mind that ``transpose(m1*m2) == transpose(m1)*transpose(m2)``.
+
+
+
+[h20][<~Matrix Multiplication?~>]
+[img src="../Posts/Everything_Matrices/matrix_multiplicating.jpg"]
+
+
+It's simple as fuck really, all you gotta do is sum the product of each
+value of each row of the first matrix - to the sum of the product of each
+value of each column of the second matrix.
+
+But that's an unnecessarily complicated mouthful, and you'd be better off
+just looking at the pictures:
+
+[img src="../Posts/Everything_Matrices/mat_mul1.jpg"]
+[img src="../Posts/Everything_Matrices/mat_mul2.jpg"]
+[img src="../Posts/Everything_Matrices/mat_mul3.jpg"]
+
+Except for the sums, it really is as intuitive as multiplying a 
+multidimensional should be I figure.
+
+There is of course the rule that you cannot multiply matrices when the first
+has a number of columns non-equal to the number of rows in the second. This
+isn't obvious at first, but once you try it you'll see it doesn't really make
+a whole lot of sense to try and do that.
+
+
+[h6][<~The Identity Matrix~>]
+[img src="../Posts/Everything_Matrices/matrix_dodge.jpg"]
+Aight I'll stop with the movie pictures now.
+
+The identity matrix is just a matrix that has it's diagonal filled with 1s.
+```
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+```^like this. Lil stairs.
+
+An identity matrix can have any dimension as long as it's square.
+
+This matrix has a cool property, which is the same as the 1 in regular math.
+Pick any matrix and multiply by the identity matrix, and much like the 1 in
+regular math, you'll end up with what you had before. There's no magic to it,
+just make up some matrix with random numbers and multiply it by the 
+corresponding identity matrix. If it doesn't make sense now, it will when you 
+do that.
+
+
+
+[h20][<~Representation?~>]
+
+In graphics, 4x4 matrices are used.
+You by now are aware though, that it is impossible to multiply a 1x3 matrix by 
+a 4x4 matrix.
+
+None of this makes sense yet, but points in 3D space (or vectors) are 
+represented by a 1x4 or 4x1 matrix (depending on the implementation).
+
+And so you might go and backtrace the logic. You might leave yourself wondering
+"so I need fucking 4 values to multiply by some 4x4 matrix idk what the fuck it 
+even does what the fuck what the fuck what the fuck what the fuck what the fuck".
+Worry not.
+
+
+
+[h20][<~Rotation?~>]
+
+I'll be honest, I don't 100% know how this works, but I also don't 100% find out.
+Even for the sake of writing a blog post.
+
+It probably goes something like this: 
+If you want to rotate (0, 1) around (0, 0) clockwise, all you gotta do is 
+``(sin(ang), cos(ang))``
+Then you just change ang, and it'll give you the point rotated by ang, always 1 
+unit away from (0, 0).
+
+That's fairly straight forward if you look at the sine/cosine graphs.
+I imagine the rotation matrices are just some adaptation of that for 3 dimensions.
+I have to imagine because I'm too lazy to brab a piece of paper and derive the
+matrices myself, but I also imagine someone less lazy such as an interested reader
+could do it with a fair amount of ease.
+
+[img src="../Posts/Everything_Matrices/rot_matrices.jpg"]
+You can also multiply these matrices by eachother to get a rotation for all 3 axis:
+[img src="../Posts/Everything_Matrices/rot_matrices_multiplied.jpg"]
+
+So yeah, this is what you use to rotate points about.
+Keep in mind this only ever rotates anything around (0, 0, 0), and it has to
+be coupled with other [__ITALIAN][<~things~>] in order to do fancy stuff.
+
+You may also notice this is a 3x3 matrix and start to wonder TRIST WHAT THE F-
+
+
+
+[h20][<~Translation?~>]
+I guess you're quite anoyed at these question marks by now. Sorry.
+
+This is not the main reason we use a 4x4 matrix.
+It is one of the main reasons.
+[h1][<~Get it? Cuz it being one of the main reason doesn't mean it's actually the main reason haha I need sleep.~>]
+
+I think it can be pretty easily explained with a picture such as this:
+[img src="../Posts/Everything_Matrices/translation_matrix.jpg"]
+
+So assuming the 4th parameter of our vector is always 1, each value on this row 
+will just be added to each coordinate of our product vector.
+
+So for instance:
+```
+[ 1 1 1 1 ] x [ 1 0 0 0 ] = [ 4 5 6 1 ]
+              [ 0 1 0 0 ]
+              [ 0 0 1 0 ]
+              [ 3 4 5 1 ]
+```And that's pretty straight forward and handy.
+
+So now we have 1 reason why the 4x4 matrix is necessary. We can now represent the 
+rotation, as well as a translation both in the same matrix. 
+
+Also due to the fact that matrix multiplication isn't commutative (you can't change 
+the order of the "parameters"), we can either apply the translation in relation to 
+the "world" (an absolute transformation), or apply the transformation vector after 
+it's been rotated by the rotation matrix, based on the order with which we multiply 
+the two matrices.
+
+There may also be some confusion, the previous referred rotation matrix wasn't 
+actually 3x3, it was 4x4, but the extra row and column are that of an identity
+matrix so the last row/column of whatever's multiplied by it remains the same.
+
+
+
+[h20][<~Projection?~>]
+So we can imagine our point was already multiplied by the rotation/translation matrix.
+
+This one has some tricks up it's sleeves.
+
+The basic idea is achieving this:

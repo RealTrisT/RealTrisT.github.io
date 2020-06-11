@@ -50,7 +50,7 @@ function TheAjaxsStateChange(){
 	}else{
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = TheAjaxsStateChange;
-		xhttp.open("GET", window.location.href.replace(/.*[\?&]w=(.+)[&]*.*/, "../Posts/$1/index.txt"), true);
+		xhttp.open("GET", window.location.href.replace(/.*[\?&]w=(.+?)(?:[&].*|$)/, "../Posts/$1/index.txt"), true);
 		xhttp.send();
 	}
 })();
