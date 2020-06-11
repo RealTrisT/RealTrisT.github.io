@@ -1,0 +1,65 @@
+[__TITLE__][<~Graphics: Everything Matrices~>]
+
+
+[h20][<~Wat?~>]
+
+Matrices. This post originated from my deep dive into graphics.
+I had previously had an experience with graphics, as you may be able to see in my 
+Xaos project (as of writing this post, that's been and will continue to be on hold 
+for a long while).
+
+So this post is fairly confusing to write, because I don't know how much to assume
+the reader already knows. The post's about a complex-ish topic of the whole graphics
+shit that's out there.
+
+So I'll start off with a brief breakdown of rasterization.
+
+[h20][<~Rasterization?~>]
+
+I'm sure you've heard about ray tracing. This is exactly not that.
+
+This is raytracing: 
+[img src="../Posts/Everything_Matrices/raytracing.jpg"]
+
+And it produces some really beautiful shit like this:
+[img src="../Posts/Everything_Matrices/raytracing_beautiful.jpg"]
+[h5][<~But that's not it~>]
+
+Raytacing tries to simulate light bounces, refractions, reflections, etc.. That's why 
+you get such realistic and beautiful renders with it.
+But like with all good things, there are enough problems associated with that. 
+Most of it stems from the fact that you can't simulate every photon, but also from 
+other generally unfeisable things. For instance it's nearly impossible to have a rainbow 
+because you'd have to simulate every water particle in the atmosphere, as well as diffractions
+(which are usually neglected regardless due to their little effect in the final product). 
+
+I digress.
+
+Our problem is that it's slow.
+
+It won't run on your PC, it won't run on your phone, it won't run. It'll only crawl.
+Very, very slowly.
+But good news, once upon a time someone found a different solution that's also fairly
+decent at displaying a 3D environment. And one that one is computationally efficient.
+
+[h5][<~Rasterization.~>]
+[img src="../Posts/Everything_Matrices/rasterization.jpg"]
+I started the rasterization section with explaining raytracing because I find it's the
+most intuitive approach, as it simulates the real world. But this one is simple as well.
+
+Consider the triangle above.
+It's 2D. It has 3 vertices. You can easily determine whether any point in space is inside
+it. You can use it to build any and all other shapes.
+
+[h4][<~Your screen~>] is made up of a finite amount of pixels. Each of those pixels has a
+location. Rasterization is just the process of grabbing this 2D triangle's vertices, and
+then figuring out which pixels should be turned on in your screen in order to show that
+triangle.
+
+People have developed a lot of very smart techniques to build this up into the beautiful
+works of art called videogames you see today:
+[img src="../Posts/Everything_Matrices/crysis_gameplay_wppr.jpg"]
+You might think this looks just as good as raytacing, and god fucking damn it this shit
+looks so fucking good. But if after this post you still feel like going down this rabbit
+hole, you'll find they just found very smart ways to avoid things that would look bad with
+rasterization.
