@@ -208,6 +208,8 @@ into graphics and you really do want to understand matrices, you might
 see elsewhere values changing in different places of the matrices.
 
 Just keep in mind that ``transpose(m1*m2) == transpose(m1)*transpose(m2)``.
+That should explain it, meaning the other person might just have a transposed
+matrix.
 
 
 
@@ -216,8 +218,8 @@ Just keep in mind that ``transpose(m1*m2) == transpose(m1)*transpose(m2)``.
 
 
 It's simple as fuck really, all you gotta do is sum the product of each
-value of each row of the first matrix - to the sum of the product of each
-value of each column of the second matrix.
+value of each row of the first matrix - with each value of each column of 
+the second matrix.
 
 But that's an unnecessarily complicated mouthful, and you'd be better off
 just looking at the pictures:
@@ -227,7 +229,7 @@ just looking at the pictures:
 [img src="../Posts/Everything_Matrices/mat_mul3.jpg"]
 
 Except for the sums, it really is as intuitive as multiplying a 
-multidimensional should be I figure.
+multidimensional array should be I figure.
 
 There is of course the rule that you cannot multiply matrices when the first
 has a number of columns non-equal to the number of rows in the second. This
@@ -276,7 +278,7 @@ Worry not.
 
 [h20][<~Rotation?~>]
 
-I'll be honest, I don't 100% know how this works, but I also don't 100% find out.
+I'll be honest, I don't 100% know how this works, but I also don't wanna find out.
 Even for the sake of writing a blog post.
 
 It probably goes something like this: 
@@ -289,7 +291,7 @@ That's fairly straight forward if you look at the sine/cosine graphs.
 I imagine the rotation matrices are just some adaptation of that for 3 dimensions.
 I have to imagine because I'm too lazy to brab a piece of paper and derive the
 matrices myself, but I also imagine someone less lazy such as an interested reader
-could do it with a fair amount of ease.
+could do it with a fair amount of ease if they so desired.
 
 [img src="../Posts/Everything_Matrices/rot_matrices.jpg"]
 You can also multiply these matrices by eachother to get a rotation for all 3 axis:
@@ -304,8 +306,6 @@ You may also notice this is a 3x3 matrix and start to wonder TRIST WHAT THE F-
 
 
 [h20][<~Translation?~>]
-I guess you're quite anoyed at these question marks by now. Sorry.
-
 This is not the main reason we use a 4x4 matrix.
 It is one of the main reasons.
 [h1][<~Get it? Cuz it being one of the main reason doesn't mean it's actually the main reason haha I need sleep.~>]
@@ -340,8 +340,220 @@ matrix so the last row/column of whatever's multiplied by it remains the same.
 
 
 [h20][<~Projection?~>]
-So we can imagine our point was already multiplied by the rotation/translation matrix.
+Projection is the process of putting the little triangles running around your 3D
+scene all into a convenient box so the rasterizer can do it's job.
 
-This one has some tricks up it's sleeves.
+[h6][<~Perspective vs Orthographic~>]
+[img src="../Posts/Everything_Matrices/perspective_vs_projection.jpg"]
+That's essentially it. With an orthographic projection there's no sense
+of depth. Something 100000 miles away will look as close as something 
+that's in your face.
 
-The basic idea is achieving this:
+
+[h6][<~Clipping Planes~>]
+
+Remember earlier when I said the Z coordinate would end up representing depth?
+I also said then that it would have to be up within the range of -1 to 1 for the
+rasterizer to be able to play with it.
+
+So unfortunately, you always need to have far and near clipping planes. You may feel
+tempted (as I was) to set it to -Infinity and +Infinity. But think about it, if you 
+try to map a digit on an infinite range to a finite range, how could that possibly 
+work? It's always going to be zero. Any_number divided by infinity is (for all intents 
+and purposes) 0. So then you lose the ability to tell depth.
+
+When you lose the ability to tell depth, your rasterizer can no longer tell what's in 
+front of what, and shit'll get nasty.
+
+Note: one of the things you do in cheats to get wallhacks is disable depth on the 
+models of the players. They'll then show on top of walls as if there weren't walls 
+in front of them.
+[img src="../Posts/Everything_Matrices/chams.jpg"]
+In this one there's a green/blue tint applied to the models also.
+
+The clipping planes are then used to dictate what gets to be rasterized and what doesn't
+Any part of a triangle outside the clipping box (-1, -1, -1) to (1, 1, 1) isn't 
+rasterized at all. So there are clipping planes in the sides, top and bottom as well, 
+they just aren't talked about as much because you already can't see to the left of your
+camera anyway.
+
+
+[h6][<~Clipping space (and others)~>]
+So first, your vertices just exist in 3D space. That's called "object space", and that's
+when the positions of the vertices of your geometry are not altered. So your player model
+for instance might still have his center of gravity or middle of his feet at (0, 0, 0).
+
+You may then do rotations/transformations/scaling on those vertices if they belong to say
+a model. After you've done those operations, you're in what's called "world space". It's
+where your objects are moved to where you want them to be in the world.
+
+Next, and because there is no such thing as a camera (as mentioned before, there is only
+a box, and only stuff that's in it gets rendered). You have camera space. Seems a little
+counter-intuitive right? It's simple. You rotate [__BOLD][<~everything~>] the opposite way 
+your abstract camera would be rotated.
+Think about it, when you have a phone, and you move it to the left, everything in the
+picture that's displayed shifts to the right. Here, it is as if there was never a phone,
+and existance itself shifted to the right because you desired to observe something that's
+on the left. I presented it a bit dramatic, but it's a cool and mindblowing realization.
+So now you're in camera space.
+
+And now, you want to put everything you're looking at inside this (-1, -1, -1) to (1, 1, 1)
+box, so the rasterizer can turn it into pixels. You do that with a projection matrix, and 
+after that, you're finally in clip space. Where everything that is to be rendered is inside
+the box.
+
+
+[h20][<~Projection.~>]
+[img src="../Posts/Everything_Matrices/projector_retro.jpg"]
+
+
+[h6][<~Ortographic Projection~>]
+
+This one is the simplest. Functions to generate ortographic matrices often have 6 
+parameters. Left, right, top, bottom, front, back. You can think of this as a new
+clip space really.
+
+Since we have to just convert whatever we have into the little box, then it should
+be enough to just map the values.
+
+Mapping values is easy enough, all you need is a sum and a multiplication.
+So mapping the range 40<->300 to -1<->1:
+``map(value) = (value-40)/((300-40)/2) - 1``
+This function will map 40 to -1 and 300 to 1. It is basically the reverse of linear
+interpolation.
+
+So all we gotta do is just adapt it to make the sum independent from the
+multiplication:
+``value/(range/2) - range_start/(range/2)``
+
+And we have our orthographic projection matrix:
+[img src="../Posts/Everything_Matrices/ortho_matrix.jpg"]
+(this matrix is transposed relative to how I'm representing it)
+
+And boom, we have ourselves a projection without distance perception. This isn't
+always bad mind you, it can be very useful for 3D modeling, since we might want to
+know that something close is perfectly aligned with something far away.
+
+It can also look good as the stiling of a 2.5D game (the version on the right):
+[img src="../Posts/Everything_Matrices/pers_ortho_game.jpg"]
+
+But now we want the one on the left.
+
+
+[h6][<~Perspective Projection~>]
+
+This one has an ace up it's sleeve. You'll see later.
+
+The concept is simple, really. You just want to make what's further away smaller.
+That's how the world works. How your eyes and your brain, and cameras work at least.
+
+[img src="../Posts/Everything_Matrices/railroad.jpg"]
+
+Notice how everything that goes away from the camera eventually ends up at the center
+of the picture.
+Did you think the fact that our clip space was from -1 to 1 was an accident?
+Think again! 
+Zero is at the center. 
+And now you're thinking "yeah dickhead big deal". I am in fact a dickhead, and it is 
+in fact a big deal. I bet you've noticed what happens when you divide any number by 
+any other (non-fractionary) number right? It gets smaller. And smaller. And smaller
+the bigger the divisor gets. It tends to 0 when the divisor tends to infinity.
+
+Do you remember how I said Z was depth? 
+
+Aigh I'm done with the suspence you divide X and Y by Z. The bigger Z gets the closer
+X and Y will be to 0, giving you the illusion of depth.
+
+It's all very simple maths bro.
+
+Now the problem is you can't divide by other elements with matrix multiplication.
+I spent some time and some pencil trying to figure this out. I really really tried to
+get a matrix multiplication to have one element of the vector divided by the other.
+You can try too, but you won't reach a solution because there isn't one.
+
+So how do we do this?
+
+Remember how our vectors had 4 elements despite only representing 3D space?
+Well, after spending 2 hours googling shit, I figured out that that last coordinate
+isn't always 1. Guess what, if it's not 1, by the time it reaches the rasterizer, the
+whole vector is W normalized. 
+
+What does that mean? XYZW. The last coordinate is called W, and once you W-normalize
+the vector, it goes back to 1.
+How do you make any number become 1? You divide it by itself. And then you've got 1.
+Keep in mind this doesn't work with 0, but we don't care cuz in our scenario it won't
+get to that.
+
+So W-normalizing the vector is just making it (x/w, y/w, z/w, w/w). BOOM, we've got
+a division.
+
+So what next? We wanted to divide X and Y by Z, not W, what the hell?
+Well my friend it is very simple:
+```
+1 0 0 0
+0 1 0 0
+0 0 1 1
+0 0 0 0
+```Boom, now W is Z.
+
+We still have a problem now. We lose our Z.
+Our Z becomes Z/W, and since W is also Z, Z becomes 1.
+So we must find a way to preserve our Z, otherwise the rasterizer won't have depth info.
+
+The way I did it was I invited the clipping planes to the party, and just developed an 
+equation to get me what I want.
+
+Think of the Z alone:
+```
+a 0 0 0
+0 b 0 0
+0 0 c d
+0 0 e 0
+```So ``a`` and ``b`` don't matter to Z.
+And if you do it in your head (or on a piece of paper), you'll arrive at the fact that
+Z is actually ``(Z*c+e)/(Z*d)``.
+
+Now all we need to do is add 2 variables: N for near plane and F for far plane, and make
+sure that given ``c``, ``d``, and ``e``, they respectively map to -1 and +1.
+
+This can be done with the following equations:
+``(N*c+e)/(N*d) == -1`` which simplified is ``c/d + e/(N*d) = -1``
+and
+``(F*c+e)/(F*d) == +1`` which simplified is ``c/d + e/(F*d) = +1``
+
+That becomes a system of equations, I'm bad at math so after failing to properly fucking
+solving it on paper, I went to the internet so the internet would do it for me:
+[img src="../Posts/Everything_Matrices/equation.jpg"]
+
+And boom, you get
+``e = (d*(F+N))/(F-N)``
+``c = (2*F*N*d)/(F-N)``
+And ``d`` is your FOV because ``X = X/(Z*d)`` and ``Y = Y/(Z*d)``.
+
+[img src="../Posts/Everything_Matrices/perspective_matrix.jpg"]
+(again, transposed)
+
+As you can see it's pretty much the same thing in regards to the Z. 
+They invert the Z so that the things in front of you have a 
+negative Z while the ones in the back have a positive Z.
+
+You can also see they have some shenanigans going on with the X and
+Y, it seems to be that they're setting the X and Y based on some other
+weird side, top and bottom clipping planes. Other people do it with the
+tangent of the FOV angle, it's really up to however you want to handle it.
+
+One last note, the final Z doesn't scale linearly as with the ortho matrix.
+[img src="../Posts/Everything_Matrices/nonlinear_z.jpg"]
+
+That's a 10 to 1000 clipping range on the Z, and as you can see, it hits 0 
+on approximately 20. That's 50% of the final range for only 2% of the initial
+one. That's fine I suppose for most applications. If you didn't want that
+to be a problem, you could just multiply your vector by the projection matrix, 
+and then just multiply Z by itself, since Z*Z/Z is Z, and also map it that
+way. I haven't done that and I honestly don't know how common a practice it is,
+but yeah, that's it folks.
+
+
+
+[h20][<~Bye.~>]
+[img src="../Posts/Everything_Matrices/westworld_robot.jpg"]
