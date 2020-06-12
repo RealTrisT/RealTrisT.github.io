@@ -432,7 +432,7 @@ And boom, we have ourselves a projection without distance perception. This isn't
 always bad mind you, it can be very useful for 3D modeling, since we might want to
 know that something close is perfectly aligned with something far away.
 
-It can also look good as the stiling of a 2.5D game (the version on the right):
+It can also look good as the styling of a 2.5D game (the version on the right):
 [img src="../Posts/Everything_Matrices/pers_ortho_game.jpg"]
 
 But now we want the one on the left.
